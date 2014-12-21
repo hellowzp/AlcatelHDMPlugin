@@ -12,9 +12,130 @@
             name="JavaScript project"
             icon="icons/sample.gif"
             category="AlcatelWizard"
-            class="ui.NewJavaScriptProjectWizard"
-            id="ui.NewJavaScriptProjectWizard">
+            class="ui.JavaScriptProjectWizard"
+            id="ui.JavaScriptProjectWizard">
       </wizard>
    </extension>
-
+   
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="editor.XMLEditor"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            extensions="xml"
+            icon="icons/sample.gif"
+            id="editor.XMLEditor"
+            name="Sample XML Editor">
+      </editor>
+      
+      <editor
+            class="editor.JavaScriptEditor"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            extensions="js"
+            default="true"
+            icon="icons/sample.gif"
+            id="editor.JSEditor"
+            name="MyJavaScript Editor">
+      </editor>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="editor.VGLEditor"
+            default="true"
+            extensions="vgl"
+            icon="icons/sample.gif"
+            id="editor.vgl"
+            name="VGL Editor">
+      </editor>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            id="AlcatelHDMPlugin.commands.category"
+            name="Sample Category">
+      </category>
+      <command
+            categoryId="AlcatelHDMPlugin.commands.category"
+            id="AlcatelHDMPlugin.commands.sampleCommand"
+            name="Sample Command">
+      </command>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="alcatelhdmplugin.handlers.SampleHandler"
+            commandId="AlcatelHDMPlugin.commands.sampleCommand">
+      </handler>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="AlcatelHDMPlugin.commands.sampleCommand"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+6">
+      </key>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:org.eclipse.ui.main.menu?after=additions">
+         <menu
+               id="AlcatelHDMPlugin.menus.sampleMenu"
+               label="Sample Menu"
+               mnemonic="M">
+            <command
+                  commandId="AlcatelHDMPlugin.commands.sampleCommand"
+                  id="AlcatelHDMPlugin.menus.sampleCommand"
+                  mnemonic="S">
+            </command>
+         </menu>
+      </menuContribution>
+      <menuContribution
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+         <toolbar
+               id="AlcatelHDMPlugin.toolbars.sampleToolbar">
+            <command
+                  commandId="AlcatelHDMPlugin.commands.sampleCommand"
+                  icon="icons/sample.gif"
+                  id="AlcatelHDMPlugin.toolbars.sampleCommand"
+                  tooltip="Say hello world">
+            </command>
+         </toolbar>
+      </menuContribution>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:org.eclipse.ui.main.menu">
+         <menu
+               label="File">
+            <command
+                  commandId="org.eclipse.ui.file.exit"
+                  label="Exit">
+            </command>
+         </menu>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="editor.CallEditor"
+            id="editor.openEditor"
+            name="Open Editor">
+      </command>
+   </extension>
+   
+   <extension
+         id="projectUtil.projectNature"
+         point="org.eclipse.core.resources.natures">
+   </extension>
+   
 </plugin>
