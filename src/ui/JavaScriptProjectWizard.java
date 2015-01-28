@@ -7,24 +7,17 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.URIUtil;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
@@ -35,10 +28,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
-import testwizard.MyPageOne;
-import testwizard.MyPageTwo;
-import testwizard.MyWizard;
-import testwizard.WizardPage1;
 
 /**
  * This is a sample new wizard. Its role is to create a new file 
@@ -70,6 +59,7 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 	 * using wizard as execution context.
 	 */
 	public boolean performFinish() {
+		//main thread
 		Thread thread = Thread.currentThread();
 		System.out.println("Current thread5 info:" + thread + "\nID: " + thread.getId() +"\nname: " +
 							thread.getName() + "\nclass: " + thread.getClass() );
@@ -106,10 +96,11 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 		IRunnableWithProgress op = new IRunnableWithProgress() {
 			
 			public void run(IProgressMonitor monitor) throws InvocationTargetException {
+				//Thread[ModalContext,6,main] class org.eclipse.jface.operation.ModalContext$ModalContextThread 
 				Thread thread = Thread.currentThread();
 				System.out.println("Current thread3 info:" + thread + "\nID: " + thread.getId() +"\nname: " +
 									thread.getName() + "\nclass: " + thread.getClass() );
-				
+				//org.eclipse.jface.operation.AccumulatingProgressMonitor@352f6387
 				System.out.println("Monitor: " + monitor );
 												
 				try {
@@ -142,7 +133,7 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 
 	private void doFinish(IProgressMonitor monitor, IProject project)
 				throws CoreException {
-		System.out.println("finish");
+		//same as thread3
 		Thread thread = Thread.currentThread();
 		System.out.println("Current thread1 info:" + thread + "\nID: " + thread.getId() +"\nname: " +
 							thread.getName() + "\nclass: " + thread.getClass() );
@@ -169,6 +160,7 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 		monitor.setTaskName("Opening file for editing...");
 		getShell().getDisplay().asyncExec(new Runnable() {
 			public void run() {
+				//main thread
 				Thread thread = Thread.currentThread();
 				System.out.println("Current thread4 info:" + thread + "\nID: " + thread.getId() +"\nname: " +
 									thread.getName() + "\nclass: " + thread.getClass() );

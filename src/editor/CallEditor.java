@@ -28,7 +28,7 @@ public class CallEditor extends AbstractHandler {
 				Person person = (Person) obj;
 				MyPersonEditorInput input = new MyPersonEditorInput(person.getId());
 				try {
-					page.openEditor(input, JavaScriptEditor.ID);
+					page.openEditor(input, PersonEditor.ID);
 
 				} catch (PartInitException e) {
 					throw new RuntimeException(e);

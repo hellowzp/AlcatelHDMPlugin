@@ -1,21 +1,11 @@
 package ui;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.URIUtil;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -27,7 +17,6 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 
 
 public class NewJavaScriptWizardPage extends WizardPage {
@@ -56,10 +45,6 @@ public class NewJavaScriptWizardPage extends WizardPage {
 	    name.setLayoutData(gd);
 	    name.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				if(name.getText().isEmpty()) {
-					setErrorMessage("Project name can't be empty");
-					return;
-				}
 				validate();
 			}
 		});
@@ -72,7 +57,7 @@ public class NewJavaScriptWizardPage extends WizardPage {
 
 	    location = new Text(container, SWT.BORDER | SWT.SINGLE);
 	    location.setLayoutData(gd);
-//	    location.setEditable(false);
+	    location.setEditable(false);
 	    String ws = ResourcesPlugin.getWorkspace().getRoot().getLocation().toString();
 	    location.setText(ws);
 	    location.addModifyListener(new ModifyListener() {
@@ -101,7 +86,14 @@ public class NewJavaScriptWizardPage extends WizardPage {
 							thread.getName() + "\nclass: " + thread.getClass() );
 		
 		setErrorMessage(null);
-		String pName = name.getText();
+		setPageComplete(false);
+		
+		String pName = name.getText();		
+		if(pName.isEmpty()) {
+			setErrorMessage("Project name can't be empty");
+			return;
+		}
+		
 		String pLocation = location.getText();
 		
 		IWorkspace workspace = ResourcesPlugin.getWorkspace(); 
@@ -117,12 +109,7 @@ public class NewJavaScriptWizardPage extends WizardPage {
 			setErrorMessage("Project location must be specified");
 			return;
 		}
-		
-		//check write permission
-		if(true) {
-			
-		}
-						
+					
 		setPageComplete(true);
 	}
 	    
@@ -133,7 +120,7 @@ public class NewJavaScriptWizardPage extends WizardPage {
     	//return empty string if cancel is clicked
     	location.setText(result);
     	System.out.println(result);
-    	validate();
+    	//validate();
 	}
 
 	public String getProjectName() {

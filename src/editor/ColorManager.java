@@ -4,25 +4,40 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.eclipse.jface.resource.StringConverter;
+import org.eclipse.jface.text.TextAttribute;
+import org.eclipse.jface.text.rules.Token;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
+import org.omg.CORBA.PUBLIC_MEMBER;
 
 public class ColorManager {
 
-	protected Map fColorTable = new HashMap(10);
+	private Map<RGB, Color> colorTable = new HashMap<>(10);
+	private Map<RGB, Token> tokenTable = new HashMap<>(10);
 
 	public void dispose() {
-		Iterator e = fColorTable.values().iterator();
-		while (e.hasNext())
-			 ((Color) e.next()).dispose();
+		Iterator<Color> e = colorTable.values().iterator();
+		while (e.hasNext())  ((Color) e.next()).dispose();
 	}
+	
 	public Color getColor(RGB rgb) {
-		Color color = (Color) fColorTable.get(rgb);
+		Color color = (Color) colorTable.get(rgb);
 		if (color == null) {
 			color = new Color(Display.getCurrent(), rgb);
-			fColorTable.put(rgb, color);
+			colorTable.put(rgb, color);
 		}
 		return color;
 	}
+	
+	public Token getToken(RGB rgb) {
+		Token token = tokenTable.get(rgb);
+		if(token == null) {
+			token = new Token( new TextAttribute( getColor(rgb) ));
+			tokenTable.put(null, token);
+		}
+		return token;
+	}
+
 }

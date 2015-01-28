@@ -1,78 +1,77 @@
 package editor;
 
-import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.part.EditorPart;
+import org.eclipse.ui.editors.text.TextEditor;
 
-public class JavaScriptEditor extends EditorPart {
-	public static final String ID = "de.vogella.rcp.editor.example.editor.personeditor";
-	private Person person;
-	private MyPersonEditorInput input;
+//compare with JavaEditor which extends AbstractDecoratedTextEditor
+//but TextEditor extends AbstractDecoratedTextEditor again
+public class JavaScriptEditor extends TextEditor  {
+
+	private ColorManager colorManager;
 	
-	@Override
-	public void init(IEditorSite site,
-					 IEditorInput input) 
-				throws PartInitException {
-		System.out.println(input);
-		if (!(input instanceof MyPersonEditorInput)) {
-			throw new RuntimeException("Wrong input");
-		}
+	public static final String GROUP_JAVASCRIPT = "_javascript";
+	public static final String ACTION_COMMENT = "_comment";
+	public static final String ACTION_DEBUGGER = "_launch_debugger";
+	public static final String ACTION_FORMAT = "_format";
+	public static final String ACTION_OUTLINE = "_outline";
+	public static final String ACTION_TOGGLE_BREAKPOINT = "_toggle_breakpoint";
 
-		MyPersonEditorInput new_name = (MyPersonEditorInput) input;
-		this.input = (MyPersonEditorInput) input;
-		setSite(site);
-		setInput(input);
-		person = MyModel.getInstance().getPersonById(this.input.getId());
-		setPartName("Person ID: " + person.getId());
+
+	public JavaScriptEditor() {
+		super();
+		colorManager = new ColorManager();
+		setSourceViewerConfiguration(new JSSourceViewerConfiguration(colorManager));
+		setDocumentProvider(new JSDocumentProvider());
+		
+		setActions();
 		
 	}
-
-	@Override
-	public void createPartControl(Composite parent) {
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 2;
-		parent.setLayout(layout);
-		Label label1 = new Label(parent, SWT.NONE);
-		label1.setText("First Name");
-		Text text = new Text(parent, SWT.BORDER);
-		text.setText(person.getFirstName());
-		text.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-		new Label(parent, SWT.NONE).setText("Last Name");
-		Text lastName = new Text(parent, SWT.BORDER);
-		lastName.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true,
-				false));
-		lastName.setText(person.getLastName());
-	}
-
-	@Override
-	public void doSave(IProgressMonitor monitor) {
-		// person.getAddress().setCountry(text2.getText());
-	}
-
-	@Override
-	public void doSaveAs() {
-	}
-
-	@Override
-	public boolean isDirty() {
-		return false;
-	}
-
-	@Override
-	public boolean isSaveAsAllowed() {
-		return false;
-	}
-
-	@Override
-	public void setFocus() {
+	
+	private void setActions() {
+		setAction(ACTION_COMMENT,new CommentAction());
 	}
 	
+	public void dispose() {
+		colorManager.dispose();
+		super.dispose();
+	}
+
+	
+	/**
+	 * Toggle comment out selection range.
+	 */
+	private class CommentAction extends Action {
+
+		public CommentAction(){
+			setEnabled(true);
+			setAccelerator(SWT.CTRL | '/');
+		}
+
+		@Override
+		public void run() {
+			System.out.println("comment acrion");
+			ITextSelection sel = (ITextSelection)getSelectionProvider().getSelection();
+			IDocument doc = getDocumentProvider().getDocument(getEditorInput());
+			String text = sel.getText();
+			text = text.replaceAll("[\r\n \t]+$", ""); // rtrim
+			int length = text.length();
+			try {
+				if(text.startsWith("//")){
+					text = text.replaceAll("(^|\r\n|\r|\n)//","$1");
+				} else {
+					text = text.replaceAll("(^|\r\n|\r|\n)","$1//");
+				}
+				doc.replace(sel.getOffset(), length, text);
+			} catch (BadLocationException e) {
+				
+			}
+		}
+	}
+
+	
+
 }
