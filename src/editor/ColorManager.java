@@ -35,7 +35,7 @@ public class ColorManager {
 		Token token = tokenTable.get(rgb);
 		if(token == null) {
 			token = new Token( new TextAttribute( getColor(rgb) ));
-			tokenTable.put(null, token);
+			tokenTable.put(rgb, token);
 		}
 		return token;
 	}

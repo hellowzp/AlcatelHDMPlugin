@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -28,20 +30,9 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
-
-/**
- * This is a sample new wizard. Its role is to create a new file 
- * resource in the provided container. If the container resource
- * (a folder or a project) is selected in the workspace 
- * when the wizard is opened, it will accept it as the target
- * container. The wizard creates one file with the extension
- * "mpe". If a sample multi-page editor (also available
- * as a template) is registered for the same extension, it will
- * be able to open it.
- */
-
 public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 	private NewJavaScriptWizardPage firstPage;	
+	private ParaConfigurePage paraPage;
 
 	public JavaScriptProjectWizard() {
 		super();
@@ -50,7 +41,18 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 	
 	public void addPages() {
 		firstPage = new NewJavaScriptWizardPage();
+//		paraPage = new ParaConfigurePage(); //dummy page
 		addPage(firstPage);
+//		addPage(paraPage);
+//		for(IWizardPage page : getPages()) {
+//			System.out.println(page.getName() + page.isPageComplete());
+//		}	
+	}
+	
+	public boolean canFinish() {
+		if (getContainer().getCurrentPage() == firstPage)
+			return firstPage.getNumOfParameers() == 0;
+		return paraPage.isPageComplete();
 	}
 
 	/**
@@ -93,18 +95,13 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 //		description.setNatureIds(new String[] { JavaCore.NATURE_ID });
 //		add any natures, builders, ... required to the project description
 	
-		IRunnableWithProgress op = new IRunnableWithProgress() {
-			
-			public void run(IProgressMonitor monitor) throws InvocationTargetException {
-				//Thread[ModalContext,6,main] class org.eclipse.jface.operation.ModalContext$ModalContextThread 
-				Thread thread = Thread.currentThread();
-				System.out.println("Current thread3 info:" + thread + "\nID: " + thread.getId() +"\nname: " +
-									thread.getName() + "\nclass: " + thread.getClass() );
-				//org.eclipse.jface.operation.AccumulatingProgressMonitor@352f6387
-				System.out.println("Monitor: " + monitor );
-												
+		final Configuration config = new Configuration(firstPage, paraPage);
+		
+		IRunnableWithProgress op = new IRunnableWithProgress() {			
+			public void run(IProgressMonitor monitor) throws InvocationTargetException {								
 				try {
-					doFinish(monitor,project); 
+					doFinish(monitor, project, config);
+//					doFinish(monitor, project, ftnName, nameKey, code, desc, paraNames, paraTypes); 
 				} catch (CoreException e) {
 					throw new InvocationTargetException(e);
 				} finally {
@@ -125,49 +122,60 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 		return true;
 	}
 	
-	/**
-	 * The worker method. It will find the container, create the
-	 * file if missing or just replace its contents, and open
-	 * the editor on the newly created file.
-	 */
-
-	private void doFinish(IProgressMonitor monitor, IProject project)
-				throws CoreException {
-		//same as thread3
-		Thread thread = Thread.currentThread();
-		System.out.println("Current thread1 info:" + thread + "\nID: " + thread.getId() +"\nname: " +
-							thread.getName() + "\nclass: " + thread.getClass() );
-		
+	public boolean performCancel() {
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		final IProject project = workspace.getRoot().getProject(firstPage.getProjectName());
+			
+		try {
+			if(project.exists())
+				project.delete(true, false, null);
+		} catch (CoreException e1) {
+			e1.printStackTrace();
+		}
+		return true;		
+	}
+	
+	private void doFinish( IProgressMonitor monitor, IProject project, Configuration config) 
+			throws CoreException {
 		// create a sample file
-		monitor.beginTask("Creating new JavaScript project", 5);
-		System.out.println("Creating new JavaScript files");
+		monitor.beginTask("Creating new JavaScript project", 10);
 					
 		IFolder jsFolder = project.getFolder("js");
 		jsFolder.create(false, true, null);
 
-		final IFile file = jsFolder.getFile("main.js");
+		monitor.setTaskName("Creating js file...");
+		String ftnName = config.ftnSettings.get(0);
+		final IFile jsFile = jsFolder.getFile(ftnName + ".js");
 		try {
-			InputStream stream = openContentStream();
-			if (file.exists()) {
-				file.setContents(stream, true, true, monitor);
+			InputStream stream = openJSContentStream(ftnName, config.paraNames);
+			if (jsFile.exists()) {
+				jsFile.setContents(stream, true, true, monitor);
 			} else {
-				file.create(stream, true, monitor);
+				jsFile.create(stream, true, monitor);
 			}
 			stream.close();
-		} catch (IOException e) { }
-		
+		} catch (IOException e) { }		
 		monitor.worked(3);
-		monitor.setTaskName("Opening file for editing...");
+		
+		monitor.setTaskName("creating xml file...");
+		IFile xmlFile = jsFolder.getFile(ftnName + ".xml");
+		try {
+			InputStream stream = openXMLContentStream(config);
+			if (xmlFile.exists()) {
+				xmlFile.setContents(stream, true, true, monitor);
+			} else {
+				xmlFile.create(stream, true, monitor);
+			}
+			stream.close();
+		} catch (IOException e) { }		
+		monitor.worked(5);
+		
+		monitor.setTaskName("Opening the js file for editing...");
 		getShell().getDisplay().asyncExec(new Runnable() {
 			public void run() {
-				//main thread
-				Thread thread = Thread.currentThread();
-				System.out.println("Current thread4 info:" + thread + "\nID: " + thread.getId() +"\nname: " +
-									thread.getName() + "\nclass: " + thread.getClass() );
-				
 				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 				try {
-					IDE.openEditor(page, file, true);
+					IDE.openEditor(page, jsFile, true);
 				} catch (PartInitException e) {
 				}
 			}
@@ -175,15 +183,83 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 		monitor.worked(2);
 	}
 	
-	/**
-	 * We will initialize file contents with a sample text.
-	 */
-
-	private InputStream openContentStream() {
-		String contents =
-			"/*This is the initial file contents for the js file.*/\n"
-			+ "function init() { };";
+	private InputStream openJSContentStream(String ftnName, List<String> paraNames) {
+		String contents = "/*This is the initial file contents for the js file.*/\n"
+						+ "function " + ftnName + "(" + paraListToString(paraNames) + ") {\n\t\n}";
+						
 		return new ByteArrayInputStream(contents.getBytes());
+	}
+	
+	private InputStream openXMLContentStream(Configuration config) {
+		StringBuilder sb = new StringBuilder(
+				  "<function name=\"?\" nameKey=\"?\" code=\"?\" "
+				+ "preactivation=\"?\" deviceTypeBound=\"?\">"
+				+ "\n\t<description>?</description>\n" );
+		int offset = 0;
+		
+		for(int i=0; i<6; i++) {
+			offset = sb.indexOf("?");
+			sb.replace(offset, offset+1, config.ftnSettings.get(i));
+		}
+		
+		if(config.paraNames==null) {
+			sb.append("\t<inputParameters/>\n</function>");
+		}else{
+			sb.append("\t<inputParameters>\n?\t</inputParameters>\n</function>");
+			for(int i=0; i<config.paraNames.size(); i++) {
+				String paraType = paraPage.getParaType(config.paraTypes.get(i));
+				String para = "\t\t<" + paraType + " name=\"" 
+							+ config.paraNames.get(i) + "\" type=\"" + config.paraTypes.get(i) +"\">"
+							+ "\n\t\t\t<description>" + config.paraDescs.get(i) + "</description>"
+							+ "\n\t\t</" + paraType + ">\n";
+							
+				offset = sb.indexOf("?");
+				sb.insert(offset,para); //will be inserted before the ? mark
+			}
+			
+			offset = sb.indexOf("?");
+			sb.replace(offset, offset+1, "");
+		}
+		
+		return new ByteArrayInputStream(sb.toString().getBytes());
+	}
+	
+	private String paraListToString(List<String> nameList) {
+		if(nameList==null)
+			return "";
+		StringBuilder names = new StringBuilder();
+		for(int i=0; i<nameList.size(); i++) {
+			names.append(nameList.get(i) + ", ");
+		}
+		return names.substring(0, names.length()-2);
+	}
+	
+	public void setParaPage(ParaConfigurePage page) {
+		this.paraPage = page;
+	}
+	
+	private static class Configuration {
+		//name, nameKey, code, pre-activation, deviceTypeBound, description
+		private List<String> ftnSettings;
+		private List<String> paraNames;
+		private List<String> paraTypes;
+		private List<String> paraDescs;
+		
+		private Configuration(NewJavaScriptWizardPage firstPage, ParaConfigurePage secondPage) {
+			ftnSettings = new ArrayList<String>(6);
+			ftnSettings.add(firstPage.getFunctionName());
+			ftnSettings.add(firstPage.getNameKey());
+			ftnSettings.add(firstPage.getCode());
+			ftnSettings.add(firstPage.getPreactivation());
+			ftnSettings.add(firstPage.getDeviceTypebound());
+			ftnSettings.add(firstPage.getDescription());
+			
+			if(secondPage!=null){
+				paraNames = secondPage.getParaNames();
+				paraTypes = secondPage.getParaTypes();
+				paraDescs = secondPage.getParaDescriptions();
+			}			
+		}
 	}
 
 	/**
