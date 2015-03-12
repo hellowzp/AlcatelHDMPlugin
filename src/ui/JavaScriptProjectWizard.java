@@ -1,11 +1,18 @@
 package ui;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,11 +24,11 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.URIUtil;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
@@ -32,7 +39,7 @@ import org.eclipse.ui.ide.IDE;
 
 public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 	private NewJavaScriptWizardPage firstPage;	
-	private ParaConfigurePage paraPage;
+	private ParamConfigurePage paramPage;
 
 	public JavaScriptProjectWizard() {
 		super();
@@ -52,7 +59,7 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 	public boolean canFinish() {
 		if (getContainer().getCurrentPage() == firstPage)
 			return firstPage.getNumOfParameers() == 0;
-		return paraPage.isPageComplete();
+		return paramPage.isPageComplete();
 	}
 
 	/**
@@ -61,47 +68,56 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 	 * using wizard as execution context.
 	 */
 	public boolean performFinish() {
-		//main thread
-		Thread thread = Thread.currentThread();
-		System.out.println("Current thread5 info:" + thread + "\nID: " + thread.getId() +"\nname: " +
-							thread.getName() + "\nclass: " + thread.getClass() );
-		
 		String name = firstPage.getProjectName();
 		String location = firstPage.getProjectLocation();
 		
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		final IProject project = workspace.getRoot().getProject(name);
-			
+
 		try {
 			project.create(null);
-			project.open(null); //pro must be open to create new folder			
+			project.open(null); //project must be open to set description and create new folder			
 		} catch (CoreException e1) {
 			e1.printStackTrace();
 		}
-		
+	
 		try {
 			IProjectDescription description = project.getDescription();
 			URI uri = null;
 			try {
-				uri = URIUtil.fromString(location);
+//				uri = URIUtil.fromString(location);
+				uri = new URI("file:/" + location);
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
 			}
 			description.setLocationURI(uri);
+			
+			//http://help.eclipse.org/luna/index.jsp?topic=%2Forg.eclipse.platform.doc.isv%2Fguide%2FresAdv_natures.htm
+//			String[] prevNatures = description.getNatureIds();
+//            String[] newNatures = new String[prevNatures.length + 1];
+//            System.arraycopy(prevNatures, 0, newNatures, 0, prevNatures.length);
+//            newNatures[prevNatures.length] = "org.eclipse.jdt.core.javanature";
+//            
+//            // check the status and decide what to do
+//            IStatus status = workspace.validateNatureSet(newNatures);
+//            if (status.getCode() == IStatus.OK) {
+//            	description.setNatureIds(newNatures);
+////            	project.setDescription(description, null); //make it take effect
+//            } else {
+//            	// raise a user error
+//    			System.out.println(project.isNatureEnabled("org.eclipse.wst.jsdt.core.jsNature"));
+//            }
+                                                
 		} catch (CoreException e) {
 			e.printStackTrace();
 		}
-
-//		description.setNatureIds(new String[] { JavaCore.NATURE_ID });
-//		add any natures, builders, ... required to the project description
-	
-		final Configuration config = new Configuration(firstPage, paraPage);
+		
+		final Configuration config = new Configuration(firstPage, paramPage);
 		
 		IRunnableWithProgress op = new IRunnableWithProgress() {			
 			public void run(IProgressMonitor monitor) throws InvocationTargetException {								
 				try {
 					doFinish(monitor, project, config);
-//					doFinish(monitor, project, ftnName, nameKey, code, desc, paraNames, paraTypes); 
 				} catch (CoreException e) {
 					throw new InvocationTargetException(e);
 				} finally {
@@ -109,7 +125,7 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 				}
 			}
 		};
-		System.out.println("IRunnableWithProgress: " + op.toString());
+//		System.out.println("IRunnableWithProgress: " + op.toString());
 		try {
 			getContainer().run(true, false, op);
 		} catch (InterruptedException e) {
@@ -123,6 +139,9 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 	}
 	
 	public boolean performCancel() {
+		if (getContainer().getCurrentPage() == firstPage)
+			return true;
+		
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		final IProject project = workspace.getRoot().getProject(firstPage.getProjectName());
 			
@@ -138,14 +157,62 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 	private void doFinish( IProgressMonitor monitor, IProject project, Configuration config) 
 			throws CoreException {
 		// create a sample file
-		monitor.beginTask("Creating new JavaScript project", 10);
-					
+		monitor.beginTask("Creating new JavaScript project", 15);
+		
+		IFile proFile = project.getFile(".project");
+		proFile.delete(true, monitor);
+		
+		//http://stackoverflow.com/questions/43157/easy-way-to-write-contents-of-a-java-inputstream-to-an-outputstream
+		try {
+			InputStream stream = openProjectDescriptiongStream(project.getName());
+			Files.copy(stream, Paths.get(project.getLocation() + "/.project"));
+			stream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}		
+		
+		IFolder settingFolder = project.getFolder(".settings");
+		if(!settingFolder.exists()) {
+			settingFolder.create(false, true, monitor);			
+		}
+		
+		
+		try (    //try with resource
+			PrintWriter os = new PrintWriter(
+					new FileOutputStream(".settings/.jsdtscope")))
+		{
+			os.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+			os.println("<classpath>");
+			os.println("\t<classpathentry kind=\"src\" path=\"js\"/>");
+			os.println("\t\t<attributes>");
+			os.println("\t\t\t<attribute name=\"provider\" value=\"org.eclipse.wst.jsdt.web.core.internal.project.ModuleSourcePathProvider\"/>");
+			os.println("\t\t</attributes>");
+			os.println("\t</classpathentry>");
+			os.println("\t<classpathentry kind=\"con\" path=\"org.eclipse.wst.jsdt.launching.JRE_CONTAINE\"/>");
+			os.println("\t<classpathentry kind=\"con\" path=\"org.eclipse.wst.jsdt.launching.baseBrowserLibrary\"/>");
+			os.println("\t<classpathentry kind=\"con\" path=\"org.eclipse.wst.jsdt.launching.WebProject\">");
+			os.println("\t\t<attributes>");
+			os.println("\t\t\t<attributes name =\"hide\" value=\"true\">");
+			os.println("\t\t</attributes>");
+			os.println("\t</classpathentry>");
+			os.println("\t<classpathentry kind=\"con\" path=\"org.eclipse.wst.jsdt.launching.JRE_CONTAINE\"/>");
+			os.println("\t<classpathentry kind=\"con\" path=\"org.eclipse.wst.jsdt.USER_LIBRARY/hdm\"/>");
+			os.println("</classpath>");
+	
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		} 
+			
+		project.close(monitor);
+		project.open(monitor);
+		monitor.worked(5);	
+		
+		monitor.setTaskName("Creating js file...");
 		IFolder jsFolder = project.getFolder("js");
 		jsFolder.create(false, true, null);
-
-		monitor.setTaskName("Creating js file...");
 		String ftnName = config.ftnSettings.get(0);
 		final IFile jsFile = jsFolder.getFile(ftnName + ".js");
+		
 		try {
 			InputStream stream = openJSContentStream(ftnName, config.paraNames);
 			if (jsFile.exists()) {
@@ -154,7 +221,9 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 				jsFile.create(stream, true, monitor);
 			}
 			stream.close();
-		} catch (IOException e) { }		
+		} catch (IOException e) { 
+			
+		}		
 		monitor.worked(3);
 		
 		monitor.setTaskName("creating xml file...");
@@ -167,7 +236,9 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 				xmlFile.create(stream, true, monitor);
 			}
 			stream.close();
-		} catch (IOException e) { }		
+		} catch (IOException e) { 
+			
+		}		
 		monitor.worked(5);
 		
 		monitor.setTaskName("Opening the js file for editing...");
@@ -184,9 +255,7 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 	}
 	
 	private InputStream openJSContentStream(String ftnName, List<String> paraNames) {
-		String contents = "/*This is the initial file contents for the js file.*/\n"
-						+ "function " + ftnName + "(" + paraListToString(paraNames) + ") {\n\t\n}";
-						
+		String contents = "function " + ftnName + "(" + paraListToString(paraNames) + ") {\n\t\n}";						
 		return new ByteArrayInputStream(contents.getBytes());
 	}
 	
@@ -207,7 +276,7 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 		}else{
 			sb.append("\t<inputParameters>\n?\t</inputParameters>\n</function>");
 			for(int i=0; i<config.paraNames.size(); i++) {
-				String paraType = paraPage.getParaType(config.paraTypes.get(i));
+				String paraType = paramPage.getParaType(config.paraTypes.get(i));
 				String para = "\t\t<" + paraType + " name=\"" 
 							+ config.paraNames.get(i) + "\" type=\"" + config.paraTypes.get(i) +"\">"
 							+ "\n\t\t\t<description>" + config.paraDescs.get(i) + "</description>"
@@ -224,6 +293,26 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 		return new ByteArrayInputStream(sb.toString().getBytes());
 	}
 	
+	private InputStream openProjectDescriptiongStream(String name) {
+		StringBuilder sb = new StringBuilder(
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\r"
+			  + "<projectDescription>\n"
+			  + "\t<name>#</name>\n"
+			  + "\t<comment></comment>\n"
+			  + "\t<projects>\n\t</projects>\n"
+			  + "\t<buildSpec>\n\t\t<buildCommand>\n"
+			  + "\t\t\t<name>org.eclipse.wst.jsdt.core.javascriptValidator</name>\n"
+			  + "\t\t\t<arguments></arguments>\n"
+			  + "\t\t</buildCommand>\n\t</buildSpec>\n"
+			  + "\t<natures>\n"
+			  + "\t\t<nature>org.eclipse.wst.jsdt.core.jsNature</nature>\n"
+			  + "\t</natures>\n</projectDescription>" );
+		int offset = sb.indexOf("#");
+		sb.replace(offset, offset+1, name);				
+				
+		return new ByteArrayInputStream(sb.toString().getBytes());
+	}
+	
 	private String paraListToString(List<String> nameList) {
 		if(nameList==null)
 			return "";
@@ -234,8 +323,17 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 		return names.substring(0, names.length()-2);
 	}
 	
-	public void setParaPage(ParaConfigurePage page) {
-		this.paraPage = page;
+	public void setParaPage(ParamConfigurePage page) {
+		this.paramPage = page;
+	}
+
+	/**
+	 * We will accept the selection in the workbench to see if
+	 * we can initialize from it.
+	 * @see IWorkbenchWizard#init(IWorkbench, IStructuredSelection)
+	 */
+	public void init(IWorkbench workbench, IStructuredSelection selection) {
+		
 	}
 	
 	private static class Configuration {
@@ -245,7 +343,7 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 		private List<String> paraTypes;
 		private List<String> paraDescs;
 		
-		private Configuration(NewJavaScriptWizardPage firstPage, ParaConfigurePage secondPage) {
+		private Configuration(NewJavaScriptWizardPage firstPage, ParamConfigurePage secondPage) {
 			ftnSettings = new ArrayList<String>(6);
 			ftnSettings.add(firstPage.getFunctionName());
 			ftnSettings.add(firstPage.getNameKey());
@@ -260,13 +358,5 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 				paraDescs = secondPage.getParaDescriptions();
 			}			
 		}
-	}
-
-	/**
-	 * We will accept the selection in the workbench to see if
-	 * we can initialize from it.
-	 * @see IWorkbenchWizard#init(IWorkbench, IStructuredSelection)
-	 */
-	public void init(IWorkbench workbench, IStructuredSelection selection) {
 	}
 }

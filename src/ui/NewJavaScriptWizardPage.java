@@ -59,6 +59,7 @@ public class NewJavaScriptWizardPage extends WizardPage {
 
 	    proName = new Text(grpProject, SWT.BORDER | SWT.SINGLE);
 	    proName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+	    proName.setFocus();
 	    proName.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				validate();
@@ -183,7 +184,7 @@ public class NewJavaScriptWizardPage extends WizardPage {
 	@Override
 	public IWizardPage getNextPage() {
 		int num = Integer.valueOf(numOfParas.getText());
-		ParaConfigurePage page =  new ParaConfigurePage(num);
+		ParamConfigurePage page =  new ParamConfigurePage(num);
 		page.setWizard(getWizard());
 		((JavaScriptProjectWizard)getWizard()).setParaPage(page);
 		return page;

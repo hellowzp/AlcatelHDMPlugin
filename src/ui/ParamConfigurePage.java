@@ -19,7 +19,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.graphics.Cursor;
 
-public class ParaConfigurePage extends WizardPage {
+public class ParamConfigurePage extends WizardPage {
 
 	private List<Text> paraNames;
 	private List<Combo> paraTypes;
@@ -30,7 +30,7 @@ public class ParaConfigurePage extends WizardPage {
 	private static final String[] complexTypes = new String[]{"Complex1","Complex2","Complex3"};
 
 
-	public ParaConfigurePage(int numOfParas) {
+	public ParamConfigurePage(int numOfParas) {
 		super("ParaConfigurePage");
 	    setTitle("Function parameters");
 	    this.numOfParas = numOfParas;

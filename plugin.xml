@@ -6,51 +6,39 @@
          point="org.eclipse.ui.newWizards">
       <category
             name="Alcatel-lucent HDM development"
-            id="AlcatelWizard">
+            id="al.hdm.jsWizard">
       </category>
       <wizard
             name="JavaScript project"
             icon="icons/sample.gif"
-            category="AlcatelWizard"
+            category="al.hdm.jsWizard"
             class="ui.JavaScriptProjectWizard"
-            id="ui.JavaScriptProjectWizard">
+            id="al.hdm.ui.JavaScriptProjectWizard">
       </wizard>
    </extension>
    
    <extension
          point="org.eclipse.ui.editors">     
       <editor
-            class="editor.JavaScriptEditor"
-            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
-            extensions="js"
-            default="true"
-            icon="icons/sample.gif"
-            id="editor.JavaScriptEditor"
-            name="MyJavaScript Editor">
+	        class="editor.JavaScriptEditor"
+	        contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+	        extensions="js"
+	        default="true"
+	        icon="icons/sample.gif"
+	        id="al.hdm.editor.JavaScriptEditor"
+	        name="My JavaScript Editor">
       </editor>
-   </extension>
-   
-   <extension
-         point="org.eclipse.ui.editors">
-      <editor
-            class="editor.VGLEditor"
-            default="true"
-            extensions="vgl"
-            icon="icons/sample.gif"
-            id="editor.vgl"
-            name="VGL Editor">
-      </editor>
-   </extension>
+   </extension> 
    
    <extension
          point="org.eclipse.ui.commands">
       <category
-            id="AlcatelHDMPlugin.commands.category"
+            id="al.hdm.commands.category"
             name="Sample Category">
       </category>
       <command
-            categoryId="AlcatelHDMPlugin.commands.category"
-            id="AlcatelHDMPlugin.commands.sampleCommand"
+            categoryId="al.hdm.commands.category"
+            id="al.hdm.commands.sampleCommand"
             name="Sample Command">
       </command>
    </extension>
@@ -59,17 +47,17 @@
          point="org.eclipse.ui.handlers">
       <handler
             class="handlers.SampleHandler"
-            commandId="AlcatelHDMPlugin.commands.sampleCommand">
+            commandId="al.hdm.commands.sampleCommand">
       </handler>
    </extension>
    
    <extension
          point="org.eclipse.ui.bindings">
       <key
-            commandId="AlcatelHDMPlugin.commands.sampleCommand"
+            commandId="al.hdm.commands.sampleCommand"
             contextId="org.eclipse.ui.contexts.window"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="M1+6">
+            sequence="M1+6">  //Ctrl + 6
       </key>
    </extension>
    
@@ -78,12 +66,12 @@
       <menuContribution
             locationURI="menu:org.eclipse.ui.main.menu?after=additions">
          <menu
-               id="AlcatelHDMPlugin.menus.sampleMenu"
+               id="al.hdm.menus.sampleCommandMenu"
                label="Sample Menu"
                mnemonic="M">
             <command
-                  commandId="AlcatelHDMPlugin.commands.sampleCommand"
-                  id="AlcatelHDMPlugin.menus.sampleCommand"
+                  commandId="al.hdm.commands.sampleCommand"
+                  id="al.hdm.menus.sampleCommand"
                   mnemonic="S">
             </command>
          </menu>
@@ -91,11 +79,11 @@
       <menuContribution
             locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
          <toolbar
-               id="AlcatelHDMPlugin.toolbars.sampleToolbar">
+               id="al.hdm.toolbars.sampleToolbar">
             <command
-                  commandId="AlcatelHDMPlugin.commands.sampleCommand"
+                  commandId="al.hdm.commands.sampleCommand"
                   icon="icons/sample.gif"
-                  id="AlcatelHDMPlugin.toolbars.sampleCommand"
+                  id="al.hdm.toolbars.sampleCommand"
                   tooltip="Say hello world">
             </command>
          </toolbar>
@@ -113,19 +101,6 @@
             </command>
          </menu>
       </menuContribution>
-   </extension>
-   <extension
-         point="org.eclipse.ui.commands">
-      <command
-            defaultHandler="editor.CallEditor"
-            id="editor.openEditor"
-            name="Open Editor">
-      </command>
-   </extension>
-   
-   <extension
-         id="projectUtil.projectNature"
-         point="org.eclipse.core.resources.natures">
    </extension>
    
 </plugin>
