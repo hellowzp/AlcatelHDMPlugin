@@ -5,18 +5,18 @@
    <extension
          point="org.eclipse.ui.newWizards">
       <category
-            name="Alcatel-lucent HDM development"
-            id="al.hdm.jsWizard">
-      </category>
+      		name="Alcatel-Lucent Bell HDM Development"
+      		id="al.hdm.jsWizard">
+  	  </category>
       <wizard
-            name="JavaScript project"
+            name="HDM JavaScript Project"
             icon="icons/sample.gif"
             category="al.hdm.jsWizard"
             class="ui.JavaScriptProjectWizard"
             id="al.hdm.ui.JavaScriptProjectWizard">
       </wizard>
-   </extension>
-   
+   </extension> 
+      
    <extension point="org.eclipse.wst.jsdt.core.JsGlobalScopeContainerInitializer">            
    <JsGlobalScopeContainerInitializer                                          
       id="al.hdm.sharedlibrary"                                                     
