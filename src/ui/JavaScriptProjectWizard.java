@@ -1,17 +1,16 @@
 package ui;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +27,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
@@ -36,6 +34,10 @@ import org.eclipse.ui.IWorkbenchWizard;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
+import org.eclipse.wst.jsdt.core.IIncludePathEntry;
+import org.eclipse.wst.jsdt.core.IJavaScriptProject;
+import org.eclipse.wst.jsdt.core.JavaScriptCore;
+import org.eclipse.wst.jsdt.core.JsGlobalScopeContainerInitializer;
 
 public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 	private NewJavaScriptWizardPage firstPage;	
@@ -83,14 +85,13 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 	
 		try {
 			IProjectDescription description = project.getDescription();
-			URI uri = null;
-			try {
-//				uri = URIUtil.fromString(location);
-				uri = new URI("file:/" + location);
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
-			}
-			description.setLocationURI(uri);
+//			try {
+////				uri = URIUtil.fromString(location);
+////				uri = new URI("file:/" + location);
+//			} catch (URISyntaxException e) {
+//				e.printStackTrace();
+//			}
+			description.setLocationURI(Paths.get(location).toUri());
 			
 			//http://help.eclipse.org/luna/index.jsp?topic=%2Forg.eclipse.platform.doc.isv%2Fguide%2FresAdv_natures.htm
 //			String[] prevNatures = description.getNatureIds();
@@ -125,6 +126,7 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 				}
 			}
 		};
+		
 //		System.out.println("IRunnableWithProgress: " + op.toString());
 		try {
 			getContainer().run(true, false, op);
@@ -176,32 +178,48 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 			settingFolder.create(false, true, monitor);			
 		}
 		
+		IJavaScriptProject jsProj = JavaScriptCore.create(project);
+		//create an instance of the container from step 1.
+		JsGlobalScopeContainerInitializer container = new SharedLibraryInitializer();
+		//create an includepath entry referring to the container         
+		IIncludePathEntry entry = JavaScriptCore.newContainerEntry(container.getPath());
+
+		IIncludePathEntry[] ipaths = jsProj.getRawIncludepath();    
+		IIncludePathEntry[] newPaths = new IIncludePathEntry[ipaths.length +1];
+
+		System.arraycopy(ipaths, 0, newPaths, 0, ipaths.length);
+		//add the new entry
+		newPaths[ipaths.length] = entry;
+		// set the new includepath to the project
+		jsProj.setRawIncludepath(newPaths, null);
 		
-		try (    //try with resource
-			PrintWriter os = new PrintWriter(
-					new FileOutputStream(".settings/.jsdtscope")))
-		{
-			os.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-			os.println("<classpath>");
-			os.println("\t<classpathentry kind=\"src\" path=\"js\"/>");
-			os.println("\t\t<attributes>");
-			os.println("\t\t\t<attribute name=\"provider\" value=\"org.eclipse.wst.jsdt.web.core.internal.project.ModuleSourcePathProvider\"/>");
-			os.println("\t\t</attributes>");
-			os.println("\t</classpathentry>");
-			os.println("\t<classpathentry kind=\"con\" path=\"org.eclipse.wst.jsdt.launching.JRE_CONTAINE\"/>");
-			os.println("\t<classpathentry kind=\"con\" path=\"org.eclipse.wst.jsdt.launching.baseBrowserLibrary\"/>");
-			os.println("\t<classpathentry kind=\"con\" path=\"org.eclipse.wst.jsdt.launching.WebProject\">");
-			os.println("\t\t<attributes>");
-			os.println("\t\t\t<attributes name =\"hide\" value=\"true\">");
-			os.println("\t\t</attributes>");
-			os.println("\t</classpathentry>");
-			os.println("\t<classpathentry kind=\"con\" path=\"org.eclipse.wst.jsdt.launching.JRE_CONTAINE\"/>");
-			os.println("\t<classpathentry kind=\"con\" path=\"org.eclipse.wst.jsdt.USER_LIBRARY/hdm\"/>");
-			os.println("</classpath>");
-	
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		} 
+		
+//		try (    //try with resource, auto-close
+//			PrintWriter os = new PrintWriter(
+//					new FileOutputStream(project.getLocation() + "/.settings/.jsdtscope")))
+//		{
+//			os.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+//			os.println("<classpath>");
+//			os.println("\t<classpathentry kind=\"src\" path=\"js\">");
+//			os.println("\t\t<attributes>");
+//			os.println("\t\t\t<attribute name=\"provider\" value=\"org.eclipse.wst.jsdt.web.core.internal.project.ModuleSourcePathProvider\"/>");
+//			os.println("\t\t</attributes>");
+//			os.println("\t</classpathentry>");
+//			
+//			os.println("\t<classpathentry kind=\"con\" path=\"org.eclipse.wst.jsdt.launching.JRE_CONTAINER\"/>");
+//			os.println("\t<classpathentry kind=\"con\" path=\"org.eclipse.wst.jsdt.launching.baseBrowserLibrary\"/>");
+//			os.println("\t<classpathentry kind=\"con\" path=\"org.eclipse.wst.jsdt.launching.WebProject\">");
+//			os.println("\t\t<attributes>");
+//			os.println("\t\t\t<attribute name =\"hide\" value=\"true\"/>");
+//			os.println("\t\t</attributes>");
+//			os.println("\t</classpathentry>");
+//			
+//			os.println("\t<classpathentry kind=\"con\" path=\"org.eclipse.wst.jsdt.USER_LIBRARY/hdm\"/>");
+//			os.println("</classpath>");
+//			os.flush();
+//		} catch (FileNotFoundException e1) {
+//			e1.printStackTrace();
+//		} 
 			
 		project.close(monitor);
 		project.open(monitor);

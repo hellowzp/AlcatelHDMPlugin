@@ -24,9 +24,9 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
  */
 public class JavaScriptEditorPlugin extends AbstractUIPlugin {
 
-	public final static String JAVA_PARTITIONING= "__java_example_partitioning"; //$NON-NLS-1$
+	public final static String JAVA_PARTITIONING= "__java_example_partitioning"; 
 
-	public static final String PLUGIN_ID= "org.eclipse.ui.examples.javaeditor"; //$NON-NLS-1$
+	public static final String PLUGIN_ID= "org.eclipse.ui.examples.javaeditor"; 
 
 	private static JavaScriptEditorPlugin fgInstance;
 

@@ -26,8 +26,11 @@ public class ParamConfigurePage extends WizardPage {
 	private List<Text> paraDescriptions;
 	private int numOfParas;
 	
-	private static final String[] simpleTypes = new String[]{"Simple1","Simple2","Simple3"};
-	private static final String[] complexTypes = new String[]{"Complex1","Complex2","Complex3"};
+	private static final String[] simpleTypes = new String[]{"string","integer","text","date","boolean","unsignedInt","long","unsignedLong","hexBinary"};
+	private static final String[] complexTypes = new String[]{"AddObjectDTO","DeleteObjectDTO","DownloadDTO","FirmwareUpdateDTO","GetOptionsDTO",
+														"GetParameterAttributesDTO","GetParameterNamesDTO","GetParameterValuesDTO","SnmpGetParameterValuesDTO",
+														"RestoreDTO","SetParameterAttributesDTO","SetParameterAttributesDTO","SnmpSetParameterValuesDTO",
+														"SetVouchersDTO","UploadDTO","ChangeDeploymentStateDTO","ScheduleDownloadDTO","CancelTransferDTO"};
 
 
 	public ParamConfigurePage(int numOfParas) {
