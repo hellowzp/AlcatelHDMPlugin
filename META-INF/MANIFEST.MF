@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Alcatel-Lucent Bell HDM JavaScript Project Wizard
+Bundle-SymbolicName: AlcatelHDMPlugin;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.ui.ide,
+ org.eclipse.jface.text,
+ org.eclipse.ui.editors,
+ org.eclipse.wst.jsdt.core
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
