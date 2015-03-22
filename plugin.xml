@@ -41,27 +41,27 @@
          point="org.eclipse.ui.commands">
       <category
             id="al.hdm.commands.category"
-            name="Sample Category">
+            name="Zip">
       </category>
       <command
             categoryId="al.hdm.commands.category"
-            id="al.hdm.commands.sampleCommand"
-            name="Sample Command">
+            id="al.hdm.commands.zipCommand"
+            name="Zip custom function">
       </command>
    </extension>
    
    <extension
          point="org.eclipse.ui.handlers">
       <handler
-            class="handlers.SampleHandler"
-            commandId="al.hdm.commands.sampleCommand">
+            class="handlers.ZipHandler"
+            commandId="al.hdm.commands.zipCommand">
       </handler>
    </extension>
    
    <extension
          point="org.eclipse.ui.bindings">
       <key
-            commandId="al.hdm.commands.sampleCommand"
+            commandId="al.hdm.commands.zipCommand"
             contextId="org.eclipse.ui.contexts.window"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+6">  <!-- Ctrl + 6 -->
@@ -73,12 +73,12 @@
       <menuContribution
             locationURI="menu:org.eclipse.ui.main.menu?after=additions">
          <menu
-               id="al.hdm.menus.sampleCommandMenu"
-               label="Sample Menu"
+               id="al.hdm.menus.zipCommandMenu"
+               label="Zip custom function"
                mnemonic="M">
             <command
-                  commandId="al.hdm.commands.sampleCommand"
-                  id="al.hdm.menus.sampleCommand"
+                  commandId="al.hdm.commands.zipCommand"
+                  id="al.hdm.menus.zipCommandMenu"
                   mnemonic="S">
             </command>
          </menu>
@@ -86,12 +86,12 @@
       <menuContribution
             locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
          <toolbar
-               id="al.hdm.toolbars.sampleToolbar">
+               id="al.hdm.toolbars.zipToolbar">
             <command
-                  commandId="al.hdm.commands.sampleCommand"
+                  commandId="al.hdm.commands.zipCommand"
                   icon="icons/sample.gif"
-                  id="al.hdm.toolbars.sampleCommand"
-                  tooltip="Say hello world">
+                  id="al.hdm.toolbars.zipCommandToolbar"
+                  tooltip="Zip custom function">
             </command>
          </toolbar>
       </menuContribution>

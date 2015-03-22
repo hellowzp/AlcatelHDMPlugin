@@ -293,7 +293,7 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 	
 	private InputStream openJSContentStream(Configuration config) {
 		StringBuilder sb = new StringBuilder(100);
-		sb.append("/* " + config.ftnSettings.get(5) + " \n"); 
+		sb.append("/**\n" + " * " + config.ftnSettings.get(5) + "\n"); 
 		if(config.paraNames!=null) {
 			for(int i=0; i<config.paraNames.size(); i++) {
 				sb.append(" * @Param " + config.paraTypes.get(i) + " " 
