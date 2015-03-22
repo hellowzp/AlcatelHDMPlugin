@@ -114,6 +114,7 @@ public class ZipHandler extends AbstractHandler{
                 }
                 zipOut.flush();
                 fis.close();
+                
 //				-------------zip xmlFile-----------
                 fis = new FileInputStream(xmlFile.getLocation().toFile());
                 ZipEntry xmlZe = new ZipEntry(xmlFile.getName());

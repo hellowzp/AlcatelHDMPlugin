@@ -89,7 +89,7 @@
                id="al.hdm.toolbars.zipToolbar">
             <command
                   commandId="al.hdm.commands.zipCommand"
-                  icon="icons/sample.gif"
+                  icon="icons/logo.png"
                   id="al.hdm.toolbars.zipCommandToolbar"
                   tooltip="Zip custom function">
             </command>
