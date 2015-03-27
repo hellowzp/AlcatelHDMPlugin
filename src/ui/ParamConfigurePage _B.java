@@ -9,6 +9,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -19,6 +20,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.custom.ScrolledComposite;
 
 import util.Validator;
@@ -40,7 +42,6 @@ public class ParamConfigurePage extends WizardPage {
 	public ParamConfigurePage(int numOfParas) {
 		super("ParaConfigurePage");
 	    setTitle("Function parameters");
-	    
 	    this.numOfParas = numOfParas;
 	    paraNames = new ArrayList<>(numOfParas);
 	    paraTypes = new ArrayList<>(numOfParas);
@@ -51,18 +52,21 @@ public class ParamConfigurePage extends WizardPage {
 
 	@Override
 	public void createControl(Composite parent) {
+		int width = 510, height = 350;
+		parent.setBounds(0, 0, width, height);
+		parent.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_YELLOW));
 		ScrolledComposite scrolledComposite = new ScrolledComposite(parent, SWT.BORDER | SWT.V_SCROLL);
 		Composite container = new Composite(scrolledComposite, SWT.NONE);
 		
 		scrolledComposite.setExpandHorizontal(false);
 		scrolledComposite.setExpandVertical(true);
 		scrolledComposite.setContent(container);
-//		scrolledComposite.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
-//		
-		if(numOfParas>5) {
-			scrolledComposite.setMinSize(520,numOfParas*100);
+		scrolledComposite.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_GREEN));
+		
+		if(numOfParas>4) {
+			scrolledComposite.setMinSize(width,numOfParas*100);
 		}else{
-			scrolledComposite.setSize(520,400);
+			scrolledComposite.setBounds(0,0,width,height); //520,400
 		}
 		
 //		scrolledComposite.addControlListener(new ControlAdapter() {
@@ -73,11 +77,16 @@ public class ParamConfigurePage extends WizardPage {
 //			}
 //		});
 		
-		container.setBounds(15, 15, 520, 400);
+		container.setBounds(0, 0, width, height);
 		container.setLayout(new GridLayout(1, false));
-//		container.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+		container.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
 		setControl(scrolledComposite);
 		
+		Point p = getControl().getParent().getSize();
+		System.out.println("Second page parent control size: " + p.x + " " + p.y);
+		p = getControl().getSize();
+		System.out.println("Second page control size: " + p.x + " " + p.y);
+			
 		for (int i = 0; i<numOfParas; i++) {
 			Group group = new Group(container, SWT.NONE);
 		    GridData groupGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -161,7 +170,7 @@ public class ParamConfigurePage extends WizardPage {
 	
 	private void validate() {
 		setPageComplete(false);
-//		setErrorMessage(null);
+		setErrorMessage(null);
 		setMessage(null);
 		
 		for(int i=0; i<numOfParas; i++) {
@@ -173,8 +182,7 @@ public class ParamConfigurePage extends WizardPage {
 			
 			if(paraDescriptions.get(i).getText().trim().isEmpty()) {
 				setMessage("It's not recemmended to leave the parameter description empty", WizardPage.WARNING); // IMessageProvider.WARNING: 2
-			}
-			
+			}			
 		}
 		
 		setPageComplete(true);
@@ -189,7 +197,18 @@ public class ParamConfigurePage extends WizardPage {
 	public IWizardPage getPreviousPage() {
 //		this.dispose();
 //		this.getControl().dispose();
-		return super.getPreviousPage();
+//		this.getControl().setSize(520,400);
+		IWizardPage page =  super.getPreviousPage();
+		
+		Point p = page.getControl().getParent().getSize();
+		System.out.println("Previous page parent control size: " + p.x + " " + p.y);
+		
+		page.getControl().getParent().setBounds(0,0,509,292);
+		page.getControl().getParent().setSize(509,292);
+		
+		System.out.println("Previous page control size: " + page.getControl().getSize().x + " " + page.getControl().getSize().y);
+
+		return page;
 	}
 	
 	public List<String> getParaNames() {

@@ -13,9 +13,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
-import org.eclipse.wst.jsdt.core.IJavaScriptElement;
-import org.eclipse.wst.jsdt.core.IJavaScriptProject;
-import org.eclipse.wst.jsdt.internal.core.PackageFragmentRoot;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
@@ -63,13 +60,6 @@ public class ZipHandler extends AbstractHandler{
 						e.printStackTrace();
 					}
 				}
-           } else if (element instanceof PackageFragmentRoot) {    
-               IJavaScriptProject jProject =     
-                   ((PackageFragmentRoot)element).getJavaScriptProject();    
-               currentProject = jProject.getProject();    
-           } else if (element instanceof IJavaScriptElement) {    
-           	IJavaScriptProject jProject= ((IJavaScriptElement)element).getJavaScriptProject();    
-               currentProject = jProject.getProject();    
            } else {
 				System.out.println("not library");
         	    MessageDialog.openInformation(

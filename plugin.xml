@@ -74,7 +74,7 @@
             locationURI="menu:org.eclipse.ui.main.menu?after=additions">
          <menu
                id="al.hdm.menus.zipCommandMenu"
-               label="Zip custom function"
+               label="Zip"
                mnemonic="M">
             <command
                   commandId="al.hdm.commands.zipCommand"
@@ -91,12 +91,13 @@
                   commandId="al.hdm.commands.zipCommand"
                   icon="icons/logo.png"
                   id="al.hdm.toolbars.zipCommandToolbar"
-                  tooltip="Zip custom function">
+                  tooltip="Zip JavaScript and xml custom function files">
             </command>
          </toolbar>
       </menuContribution>
    </extension>
    
+   <!--
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution
@@ -109,5 +110,6 @@
          </menu>
       </menuContribution>
    </extension>
+   -->
    
 </plugin>

@@ -54,9 +54,12 @@ public class NewJavaScriptWizardPage extends WizardPage {
 		setControl(container);
 		container.setLayout(new GridLayout(1, false));
 		
+//		parent.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_YELLOW));
+//		container.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
+		
 		Group grpProject = new Group(container, SWT.NONE);
 		GridData gd_grpProject = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_grpProject.widthHint = 568;
+		gd_grpProject.widthHint = 500;
 		grpProject.setLayoutData(gd_grpProject);
 		grpProject.setText("Project");
 		grpProject.setLayout(new GridLayout(3, false));
@@ -106,13 +109,13 @@ public class NewJavaScriptWizardPage extends WizardPage {
 	    
 	    Group grpFunction = new Group(container, SWT.NONE);
 	    GridData gd_grpFunction = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-	    gd_grpFunction.widthHint = 568;
+	    gd_grpFunction.widthHint = 500;
 	    grpFunction.setLayoutData(gd_grpFunction);
 	    grpFunction.setText("Function");
 	    grpFunction.setLayout(new GridLayout(3, false));
 	    
 	    Label lblFunctionName = new Label(grpFunction, SWT.NONE);
-	    lblFunctionName.setText("  &Function name: ");
+	    lblFunctionName.setText("  &Name: ");
 	    
 	    fntName = new Text(grpFunction, SWT.BORDER);
 	    fntName.setText("main");
@@ -130,7 +133,7 @@ public class NewJavaScriptWizardPage extends WizardPage {
 	    
 	    Label lblNumberOfParameters = new Label(grpFunction, SWT.NONE);
 //	    lblNumberOfParameters.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-	    lblNumberOfParameters.setText("  &Number of parameters: ");
+	    lblNumberOfParameters.setText("  &#Parameters: ");
 	    
 	    numOfParas = new Text(grpFunction, SWT.BORDER);
 	    numOfParas.setText("1");
@@ -183,7 +186,10 @@ public class NewJavaScriptWizardPage extends WizardPage {
 	    
 	    new Label(grpFunction, SWT.NONE);
 	        
-		setPageComplete(false);    
+		setPageComplete(false);   
+		
+//		Point p = getControl().getParent().getSize();
+//		System.out.println("First page parent control size: " + p.x + " " + p.y);
 	}
 	
 	@Override
@@ -198,7 +204,7 @@ public class NewJavaScriptWizardPage extends WizardPage {
 		int num = Integer.valueOf(numOfParas.getText());
 		ParamConfigurePage page =  new ParamConfigurePage(num);
 		page.setWizard(getWizard());
-		((JavaScriptProjectWizard)getWizard()).setParaPage(page);
+		((JavaScriptProjectWizard)getWizard()).setParaPage(page);	
 		return page;
 	}
 

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<eclipse-userlibraries version="2">
-    <library name="hdm">
-        <archive path="D:/my_documents/engineering_files/eclipse_RCP/AlcatelHDMPlugin/libraries/common.js"/>
-        <archive path="D:/my_documents/engineering_files/eclipse_RCP/AlcatelHDMPlugin/libraries/sharedPreactivationScript.js"/>
-        <archive path="D:/my_documents/engineering_files/eclipse_RCP/AlcatelHDMPlugin/libraries/sharedScript.js"/>
-    </library>
-</eclipse-userlibraries>

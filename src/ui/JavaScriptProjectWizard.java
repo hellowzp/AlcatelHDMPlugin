@@ -1,6 +1,10 @@
 package ui;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -8,25 +12,32 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWizard;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.WorkbenchException;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.wst.jsdt.core.IIncludePathEntry;
 import org.eclipse.wst.jsdt.core.IJavaScriptProject;
@@ -140,7 +151,7 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 		
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		final IProject project = workspace.getRoot().getProject(firstPage.getProjectName());
-			
+		
 		try {
 			if(project.exists())
 				project.delete(true, false, null);
@@ -161,7 +172,7 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 		//http://stackoverflow.com/questions/43157/easy-way-to-write-contents-of-a-java-inputstream-to-an-outputstream
 		try {
 			InputStream stream = openProjectDescriptiongStream(project.getName());
-			Files.copy(stream, Paths.get(project.getLocation() + "/.project"));
+			Files.copy(stream, Paths.get( project.getLocation().append( File.separator + ".project").toString() ));
 			stream.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -237,7 +248,7 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 			
 		project.close(monitor);
 		project.open(monitor);
-		monitor.worked(4);	
+		monitor.worked(3);	
 		
 		monitor.setTaskName("Creating js file...");
 		IFolder jsFolder = project.getFolder("js");
@@ -273,24 +284,114 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 		}		
 		monitor.worked(3);
 		
-		monitor.setTaskName("Opening the js file for editing...");
+		monitor.setTaskName("Opening the js file in JavaScript perspective...");
+		IWorkspaceRoot ws = ResourcesPlugin.getWorkspace().getRoot();
+		System.out.println(ws.getLocation() + " " + ws.getLocationURI());
+		IPath path = ws.getLocation().append(File.separator + ".metadata" + File.separator + ".hdm");
+//		System.out.println(path.toString());
+//		IFolder preFolder = ws.getFolder(new Path(".hdm"));
+//		if(!preFolder.exists()) {
+//			try {
+//				preFolder.create(false, true, monitor);
+//			} catch (CoreException e) {
+//				e.printStackTrace();
+//			}
+//		}
+				
+//		IFile preFile = preFolder.getFile("preferences.properties");
+//		final Properties prefProperty = new Properties();
+//
+//		if(!preFile.exists()) {
+//			InputStream stream = openPreferenceStream();
+//			preFile.create(stream, true, monitor);
+//			try {
+//				stream.close();
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//		}
+		
+		File preFolder = new File(path.toOSString());
+		if(!preFolder.exists()) {
+			preFolder.mkdir();
+		}
+		
+		final File preFile = new File(preFolder, "preferences.properties");
+		if(!preFile.exists()) {
+			try {
+				InputStream stream = openPreferenceStream();
+				Files.copy(stream, preFile.toPath());
+				stream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		final Properties prefProperty = new Properties();
+		try {
+			prefProperty.load(new FileInputStream(preFile));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}		
+		
 		getShell().getDisplay().asyncExec(new Runnable() {
 			public void run() {
-				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+				IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();			
+				String pref = prefProperty.getProperty("keepOpenInJavaScriptPerspective", "false");
+
+				if(pref.equals("false")) {
+					MessageDialogWithToggle msgDialog = new MessageDialogWithToggle(
+							getShell(), "Comfirm", getDefaultPageImage(), 
+							"This project is associated with the JavaScript perspective.\n"
+						  + "Do you want to open this perspective now?", 
+							MessageDialog.QUESTION, new String[] {"OK", "Cancel"}, 0, "Remember this decision", false);
+					msgDialog.open();
+
+//					boolean cm = MessageDialogWithToggle.openConfirm(
+//							getShell(), "Comfirm", 
+//							"This project is associated with the JavaScript perspective.\n\n"
+//						  + "Do you want to open this perspective now?");
+					
+					if(msgDialog.getReturnCode() == MessageDialogWithToggle.OK) {
+						try {
+							PlatformUI.getWorkbench().showPerspective("org.eclipse.wst.jsdt.ui.JavaPerspective", window);
+						} catch (WorkbenchException e) {
+							e.printStackTrace();
+						}
+						
+						prefProperty.setProperty("keepOpenInJavaScriptPerspective", String.valueOf(msgDialog.getToggleState()));
+						try {
+							prefProperty.store(new FileOutputStream(preFile), "hdm project preferences");
+						} catch (FileNotFoundException e) {
+							e.printStackTrace();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}else{
+					try {
+						PlatformUI.getWorkbench().showPerspective("org.eclipse.wst.jsdt.ui.JavaPerspective", window);
+					} catch (WorkbenchException e) {
+						e.printStackTrace();
+					}
+				}
+						
+				IWorkbenchPage page = window.getActivePage();
 				try {
 					IDE.openEditor(page, jsFile, true);
 				} catch (PartInitException e) {
+					e.printStackTrace();
 				}
 			}
 		});
-		monitor.worked(1);
+		monitor.worked(2);
 	}
 	
 //	private InputStream openJSContentStream(String ftnName, List<String> paraNames) {
 //		String contents = "function " + ftnName + "(" + paraListToString(paraNames) + ") {\n\t\n}";						
 //		return new ByteArrayInputStream(contents.getBytes());
 //	}
-	
+
 	private InputStream openJSContentStream(Configuration config) {
 		StringBuilder sb = new StringBuilder(100);
 		sb.append("/**\n" + " * " + config.ftnSettings.get(5) + "\n"); 
@@ -359,6 +460,10 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 		sb.replace(offset, offset+1, name);				
 				
 		return new ByteArrayInputStream(sb.toString().getBytes());
+	}
+	
+	private InputStream openPreferenceStream() {
+		return new ByteArrayInputStream("keepOpenInJavaScriptPerspective=false".getBytes());
 	}
 	
 	private String paraListToString(List<String> nameList) {
