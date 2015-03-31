@@ -45,7 +45,8 @@ public class ParamConfigurePage extends WizardPage {
 	    paraNames = new ArrayList<>(numOfParas);
 	    paraTypes = new ArrayList<>(numOfParas);
 	    paraDescriptions = new ArrayList<>(numOfParas);
-	    setDescription("Specify the information about the function parameters");
+	    setDescription("Specify the detailed parameter information for the function");
+	    setImageDescriptor(JavaScriptProjectWizard.LOGO_DESCRIPTOR);
 	    setPageComplete(false);
 	}
 

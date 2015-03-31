@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Alcatel-Lucent Bell HDM JavaScript Project Wizard
 Bundle-SymbolicName: AlcatelHDMPlugin;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-Activator: Activator
+Bundle-Activator: ui.HDMPluginActivator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
