@@ -44,7 +44,8 @@ public class NewJavaScriptWizardPage extends WizardPage {
 	public NewJavaScriptWizardPage() {
 		super("first page");
 	    setTitle("JavaScript Project");
-	    setDescription("specify the location and the name for your new project");
+	    setDescription("First wizard page");
+	    setImageDescriptor(JavaScriptProjectWizard.LOGO_DESCRIPTOR);
 	    setPageComplete(false);    
 	}
 

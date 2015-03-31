@@ -24,10 +24,10 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
@@ -47,6 +47,8 @@ import org.eclipse.wst.jsdt.core.JsGlobalScopeContainerInitializer;
 public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 	private NewJavaScriptWizardPage firstPage;	
 	private ParamConfigurePage paramPage;
+	
+	static final ImageDescriptor LOGO_DESCRIPTOR = HDMPluginActivator.getImageDescriptor("icons/logo_big.png");
 
 	public JavaScriptProjectWizard() {
 		super();
@@ -318,6 +320,7 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 		
 		final File preFile = new File(preFolder, "preferences.properties");
 		if(!preFile.exists()) {
+//			System.out.println("creating files in the fs...");
 			try {
 				InputStream stream = openPreferenceStream();
 				Files.copy(stream, preFile.toPath());
