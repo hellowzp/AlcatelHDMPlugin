@@ -36,7 +36,6 @@ public class ParamConfigurePage extends WizardPage {
 														"RestoreDTO","SetParameterAttributesDTO","SetParameterAttributesDTO","SnmpSetParameterValuesDTO",
 														"SetVouchersDTO","UploadDTO","ChangeDeploymentStateDTO","ScheduleDownloadDTO","CancelTransferDTO"};
 
-
 	public ParamConfigurePage(int numOfParas) {
 		super("ParaConfigurePage");
 	    setTitle("Function parameters");
@@ -94,17 +93,17 @@ public class ParamConfigurePage extends WizardPage {
 			lblName.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 			lblName.setText("  &Name");
 			
-			Text nameText = new Text(group, SWT.BORDER);
+			Text paraName = new Text(group, SWT.BORDER);
 			GridData gd_text_1 = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 //			gd_text_1.widthHint = 100;
-			nameText.setLayoutData(gd_text_1);
-			nameText.setText("para_" + (i+1));
-			nameText.addModifyListener(new ModifyListener() {
+			paraName.setLayoutData(gd_text_1);
+			paraName.setText("para_" + (i+1));
+			paraName.addModifyListener(new ModifyListener() {
 				public void modifyText(ModifyEvent e) {
 					validate();
 				}
 			});			
-			paraNames.add(nameText);
+			paraNames.add(paraName);
 			
 			Label lblDes = new Label(group, SWT.NONE);
 			lblDes.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -162,7 +161,7 @@ public class ParamConfigurePage extends WizardPage {
 	
 	private void validate() {
 		setPageComplete(false);
-//		setErrorMessage(null);
+		setErrorMessage(null);
 		setMessage(null);
 		
 		for(int i=0; i<numOfParas; i++) {
