@@ -36,6 +36,8 @@ public class NewJavaScriptWizardPage extends WizardPage {
 	private Button btnPreactivation;
 	private Button btnDeviceTypebound;
 	
+	private int state = 0xff; //0xffffffff;
+	
 	private static final Pattern FUNCTION_PATTERN = Pattern.compile("[_$a-zA-Z\\xA0-\\uFFFF][_$a-zA-Z0-9\\xA0-\\uFFFF]*");
 	private static final String[] JAVASCRIPT_KEY_WORDS = { "instanceof", "typeof", "break", "do", "new", "var", "case", "else", "return", "void", 
 														   "catch", "finally", "continue", "for", "switch", "while", "this", "with", "debugger", 
@@ -89,8 +91,7 @@ public class NewJavaScriptWizardPage extends WizardPage {
 	    proLocation = new Text(grpProject, SWT.BORDER | SWT.SINGLE);
 	    proLocation.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 	    proLocation.setEditable(false);
-	    String ws = ResourcesPlugin.getWorkspace().getRoot().getLocation().toString();
-	    proLocation.setText(ws);
+	    proLocation.setText(ResourcesPlugin.getWorkspace().getRoot().getLocation().toString());
 	    proLocation.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				validate();
@@ -118,14 +119,15 @@ public class NewJavaScriptWizardPage extends WizardPage {
 	    Label lblFunctionName = new Label(grpFunction, SWT.NONE);
 	    lblFunctionName.setText("  &Name: ");
 	    
-	    fntName = new Text(grpFunction, SWT.BORDER);
-	    fntName.setText("main");
+	    fntName = new Text(grpFunction, SWT.BORDER | SWT.SINGLE);
+	    fntName.setMessage("main");
 //	    gd_txtMain.widthHint = 447;
 	    GridData gd_fntName = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 	    gd_fntName.widthHint = 356;
 	    fntName.setLayoutData(gd_fntName);
 	    fntName.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
+				state &= 0xfe; //set first bit to 0
 				validate();
 			}
 		});
@@ -148,11 +150,11 @@ public class NewJavaScriptWizardPage extends WizardPage {
 	    new Label(grpFunction, SWT.NONE);
 	    
 	    Label lblDescriprion = new Label(grpFunction, SWT.NONE);
-	    lblDescriprion.setText("  &Descriprion");
+	    lblDescriprion.setText("  &Description");
 	    
 	    description = new Text(grpFunction, SWT.BORDER);
 	    description.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-	    description.setText("description");
+	    description.setMessage("function description");
 	    
 	    new Label(grpFunction, SWT.NONE);
 	    
@@ -161,7 +163,7 @@ public class NewJavaScriptWizardPage extends WizardPage {
 	    
 	    nameKey = new Text(grpFunction, SWT.BORDER);
 	    nameKey.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-	    nameKey.setText("nameKey");
+	    nameKey.setMessage("function nameKey");
 	    
 	    new Label(grpFunction, SWT.NONE);
 	    
@@ -170,9 +172,10 @@ public class NewJavaScriptWizardPage extends WizardPage {
 	    
 	    code = new Text(grpFunction, SWT.BORDER);
 	    code.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-	    code.setText("2013");
+	    code.setMessage("integer function code between 1 and 1000");
 	    code.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
+				state &= 0xfd;  //set second bit to 0
 				validate();
 			}
 		});
@@ -234,6 +237,7 @@ public class NewJavaScriptWizardPage extends WizardPage {
 			return;
 		}
 		
+		if((state & 0x01) != 0) return;
 		String ftnValidationMsg = isValidFunctionName(getFunctionName()); 
 		if(ftnValidationMsg!=null) {
 			setErrorMessage(ftnValidationMsg);
@@ -249,12 +253,16 @@ public class NewJavaScriptWizardPage extends WizardPage {
 			return;
 		}
 		
+		if((state & 0x02) != 0) return;
 		retInt = isValidNumber(getCode());
 		if(retInt==-1) {
 			setErrorMessage("Function code cannot be empty");
 			return;
 		}else if(retInt==-2) {
-			setErrorMessage("Invalid input, Function code accept only integer values");
+			setErrorMessage("Invalid input, function code accept only integer values");
+			return;
+		}else if(retInt < 1 || retInt > 1000) {
+			setErrorMessage("The function code should be between 1 and 1000");
 			return;
 		}
 					
@@ -271,15 +279,13 @@ public class NewJavaScriptWizardPage extends WizardPage {
 	}
     
     private int isValidNumber(String tf) {
-    	int ret = -1;
     	if(tf.isEmpty()) 
-    		return ret;
+    		return -1;
     	try{
-    		ret = Integer.parseInt(tf);
+    		return Integer.parseInt(tf);
     	}catch(NumberFormatException exception){
     		return -2;
     	}
-		return ret;
     }
     
     private String isValidFunctionName(String ftn) {
