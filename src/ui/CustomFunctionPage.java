@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-public class NewJavaScriptWizardPage extends WizardPage {
+public class CustomFunctionPage extends WizardPage {
 	
 	private Text proName;
 	private Text proLocation;
@@ -43,11 +43,11 @@ public class NewJavaScriptWizardPage extends WizardPage {
 														   "catch", "finally", "continue", "for", "switch", "while", "this", "with", "debugger", 
 														   "function", "throw", "default", "if", "try", "delete", "in", "abstarct" };
 		
-	public NewJavaScriptWizardPage() {
+	public CustomFunctionPage() {
 		super("first page");
 	    setTitle("JavaScript Project");
 	    setDescription("First wizard page");
-	    setImageDescriptor(JavaScriptProjectWizard.LOGO_DESCRIPTOR);
+	    setImageDescriptor(CustomFunctionWizard.LOGO_DESCRIPTOR);
 	    setPageComplete(false);    
 	}
 
@@ -68,7 +68,7 @@ public class NewJavaScriptWizardPage extends WizardPage {
 		grpProject.setLayout(new GridLayout(3, false));
 		
 		Label nameLabel = new Label(grpProject, SWT.NONE);
-	    nameLabel.setText("  &Project name: ");this.
+	    nameLabel.setText("  Project name: ");this.
 
 	    proName = new Text(grpProject, SWT.BORDER | SWT.SINGLE);
 	    proName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -86,7 +86,7 @@ public class NewJavaScriptWizardPage extends WizardPage {
 //	    GridData gd_locationLabel = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 //	    gd_locationLabel.heightHint = 15;
 //	    locationLabel.setLayoutData(gd_locationLabel);
-	    locationLabel.setText("  &Project location: ");
+	    locationLabel.setText("  Project location: ");
 
 	    proLocation = new Text(grpProject, SWT.BORDER | SWT.SINGLE);
 	    proLocation.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -117,7 +117,7 @@ public class NewJavaScriptWizardPage extends WizardPage {
 	    grpFunction.setLayout(new GridLayout(3, false));
 	    
 	    Label lblFunctionName = new Label(grpFunction, SWT.NONE);
-	    lblFunctionName.setText("  &Name: ");
+	    lblFunctionName.setText("  Name: ");
 	    
 	    fntName = new Text(grpFunction, SWT.BORDER | SWT.SINGLE);
 	    fntName.setMessage("main");
@@ -136,7 +136,7 @@ public class NewJavaScriptWizardPage extends WizardPage {
 	    
 	    Label lblNumberOfParameters = new Label(grpFunction, SWT.NONE);
 //	    lblNumberOfParameters.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-	    lblNumberOfParameters.setText("  &#Parameters: ");
+	    lblNumberOfParameters.setText("  #Parameters: ");
 	    
 	    numOfParas = new Text(grpFunction, SWT.BORDER);
 	    numOfParas.setText("1");
@@ -150,7 +150,7 @@ public class NewJavaScriptWizardPage extends WizardPage {
 	    new Label(grpFunction, SWT.NONE);
 	    
 	    Label lblDescriprion = new Label(grpFunction, SWT.NONE);
-	    lblDescriprion.setText("  &Description");
+	    lblDescriprion.setText("  Description");
 	    
 	    description = new Text(grpFunction, SWT.BORDER);
 	    description.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -159,7 +159,7 @@ public class NewJavaScriptWizardPage extends WizardPage {
 	    new Label(grpFunction, SWT.NONE);
 	    
 	    Label lblNameKey = new Label(grpFunction, SWT.NONE);
-	    lblNameKey.setText("  &Name Key");
+	    lblNameKey.setText("  Name Key");
 	    
 	    nameKey = new Text(grpFunction, SWT.BORDER);
 	    nameKey.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -168,7 +168,7 @@ public class NewJavaScriptWizardPage extends WizardPage {
 	    new Label(grpFunction, SWT.NONE);
 	    
 	    Label lblCode = new Label(grpFunction, SWT.NONE);
-	    lblCode.setText("  &Code");
+	    lblCode.setText("  Code");
 	    
 	    code = new Text(grpFunction, SWT.BORDER);
 	    code.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -183,10 +183,10 @@ public class NewJavaScriptWizardPage extends WizardPage {
 	    new Label(grpFunction, SWT.NONE);
 	    
 	    btnPreactivation = new Button(grpFunction, SWT.CHECK);
-	    btnPreactivation.setText("  &Preactivation");
+	    btnPreactivation.setText("  Preactivation");
 	    
 	    btnDeviceTypebound = new Button(grpFunction, SWT.CHECK);
-	    btnDeviceTypebound.setText("  &deviceTypeBound");
+	    btnDeviceTypebound.setText("  deviceTypeBound");
 	    
 	    new Label(grpFunction, SWT.NONE);
 	        
@@ -206,9 +206,9 @@ public class NewJavaScriptWizardPage extends WizardPage {
 	@Override
 	public IWizardPage getNextPage() {
 		int num = Integer.valueOf(numOfParas.getText());
-		ParamConfigurePage page =  new ParamConfigurePage(num);
+		CustomFunctionParameterPage page =  new CustomFunctionParameterPage(num);
 		page.setWizard(getWizard());
-		((JavaScriptProjectWizard)getWizard()).setParaPage(page);	
+		((CustomFunctionWizard)getWizard()).setParaPage(page);	
 		return page;
 	}
 

@@ -9,11 +9,11 @@
       		id="al.hdm.jsWizard">
   	  </category>
       <wizard
-            name="HDM JavaScript Project"
+            name="HDM Custom Function Project"
             icon="icons/logo.png"
             category="al.hdm.jsWizard"
-            class="ui.JavaScriptProjectWizard"
-            id="al.hdm.ui.JavaScriptProjectWizard">
+            class="ui.CustomFunctionWizard"
+            id="al.hdm.ui.CustomFunctionWizard">
       </wizard>
    </extension> 
       

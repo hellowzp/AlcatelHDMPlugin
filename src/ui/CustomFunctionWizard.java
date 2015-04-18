@@ -44,19 +44,19 @@ import org.eclipse.wst.jsdt.core.IJavaScriptProject;
 import org.eclipse.wst.jsdt.core.JavaScriptCore;
 import org.eclipse.wst.jsdt.core.JsGlobalScopeContainerInitializer;
 
-public class JavaScriptProjectWizard extends Wizard implements INewWizard {
-	private NewJavaScriptWizardPage firstPage;	
-	private ParamConfigurePage paramPage;
+public class CustomFunctionWizard extends Wizard implements INewWizard {
+	private CustomFunctionPage firstPage;	
+	private CustomFunctionParameterPage paramPage;
 	
 	static final ImageDescriptor LOGO_DESCRIPTOR = HDMPluginActivator.getImageDescriptor("icons/logo_big.png");
 
-	public JavaScriptProjectWizard() {
+	public CustomFunctionWizard() {
 		super();
 		setNeedsProgressMonitor(true);
 	}
 	
 	public void addPages() {
-		firstPage = new NewJavaScriptWizardPage();
+		firstPage = new CustomFunctionPage();
 //		paraPage = new ParaConfigurePage(); //dummy page
 		addPage(firstPage);
 //		addPage(paraPage);
@@ -479,7 +479,7 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 		return names.substring(0, names.length()-2);
 	}
 	
-	public void setParaPage(ParamConfigurePage page) {
+	public void setParaPage(CustomFunctionParameterPage page) {
 		this.paramPage = page;
 	}
 
@@ -499,7 +499,7 @@ public class JavaScriptProjectWizard extends Wizard implements INewWizard {
 		private List<String> paraTypes;
 		private List<String> paraDescs;
 		
-		private Configuration(NewJavaScriptWizardPage firstPage, ParamConfigurePage secondPage) {
+		private Configuration(CustomFunctionPage firstPage, CustomFunctionParameterPage secondPage) {
 			ftnSettings = new ArrayList<String>(6);
 			ftnSettings.add(firstPage.getFunctionName());
 			ftnSettings.add(firstPage.getNameKey());
