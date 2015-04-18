@@ -24,6 +24,7 @@
         	class="ui.HDMSharedLibraryInitializer"/>
    </extension>
    
+   <!--
    <extension
          point="org.eclipse.ui.editors">     
       <editor
@@ -36,6 +37,7 @@
 	        name="HDM JavaScript Editor">
       </editor>
    </extension> 
+   -->
    
    <extension
          point="org.eclipse.ui.commands">

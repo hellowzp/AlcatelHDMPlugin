@@ -25,10 +25,13 @@ public class HDMPluginActivator extends AbstractUIPlugin {
 		return getBundle().getSymbolicName();
 	}
 	
+	/**
+	 * user.dir: /Applications/eclipse/Eclipse.app/Contents/MacOS
+	 */
 	@Override
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		plugin = this;
+		plugin = this;	
 	}
 	
 	@Override
