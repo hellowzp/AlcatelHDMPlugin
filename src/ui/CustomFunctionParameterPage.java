@@ -60,6 +60,10 @@ public class CustomFunctionParameterPage extends WizardPage {
 	public void createControl(Composite parent) {
 		ScrolledComposite scrolledComposite = new ScrolledComposite(parent, SWT.BORDER | SWT.V_SCROLL);
 		Composite container = new Composite(scrolledComposite, SWT.NONE);
+		container.setBounds(15, 15, 520, 400);
+		container.setLayout(new GridLayout(1, false));
+//		container.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+		setControl(scrolledComposite);
 		
 		scrolledComposite.setExpandHorizontal(false);
 		scrolledComposite.setExpandVertical(true);
@@ -79,11 +83,6 @@ public class CustomFunctionParameterPage extends WizardPage {
 //						SWT.DEFAULT));
 //			}
 //		});
-		
-		container.setBounds(15, 15, 520, 400);
-		container.setLayout(new GridLayout(1, false));
-//		container.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
-		setControl(scrolledComposite);
 		
 		for (int i = 0; i<numOfParas; i++) {
 			Group group = new Group(container, SWT.NONE);
