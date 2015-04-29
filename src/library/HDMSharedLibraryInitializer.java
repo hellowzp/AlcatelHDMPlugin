@@ -1,4 +1,4 @@
-package ui;
+package library;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +18,7 @@ import org.osgi.framework.Bundle;
 
 public class HDMSharedLibraryInitializer extends JsGlobalScopeContainerInitializer {
 	
-	private static final String LIBRARY_ID = "al.hdm.sharedlibrary";
+	private static final String LIBRARY_ID = "al.hdm.library.sharedlibrary";
 	private static final String[] LIBRARY_FILE_NAMES = { "common.js", "sharedScript.js", "sharedPreactivationScript.js" };
 
 	private final LibraryLocation libLocation = new HDMLibraryLocation();

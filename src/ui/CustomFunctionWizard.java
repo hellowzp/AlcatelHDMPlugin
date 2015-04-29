@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import library.HDMSharedLibraryInitializer;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -43,6 +45,8 @@ import org.eclipse.wst.jsdt.core.IIncludePathEntry;
 import org.eclipse.wst.jsdt.core.IJavaScriptProject;
 import org.eclipse.wst.jsdt.core.JavaScriptCore;
 import org.eclipse.wst.jsdt.core.JsGlobalScopeContainerInitializer;
+
+import core.HDMPluginActivator;
 
 public class CustomFunctionWizard extends Wizard implements INewWizard {
 	private CustomFunctionPage firstPage;	

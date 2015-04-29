@@ -1,4 +1,4 @@
-package handlers;
+package handler;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
