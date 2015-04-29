@@ -39,9 +39,11 @@ public class CustomFunctionPage extends WizardPage {
 	private int state = 0xff; //0xffffffff;
 	
 	private static final Pattern FUNCTION_PATTERN = Pattern.compile("[_$a-zA-Z\\xA0-\\uFFFF][_$a-zA-Z0-9\\xA0-\\uFFFF]*");
-	private static final String[] JAVASCRIPT_KEY_WORDS = { "instanceof", "typeof", "break", "do", "new", "var", "case", "else", "return", "void", 
-														   "catch", "finally", "continue", "for", "switch", "while", "this", "with", "debugger", 
-														   "function", "throw", "default", "if", "try", "delete", "in", "abstarct" };
+	private static final String[] JAVASCRIPT_KEY_WORDS = { 
+		"instanceof", "typeof", "break", "do", "new", "var", "case", 
+		"else", "return", "void", "catch", "finally", "continue", 
+		"for", "switch", "while", "this", "with", "debugger", "function", 
+		"throw", "default", "if", "try", "delete", "in", "abstarct" };
 		
 	public CustomFunctionPage() {
 		super("first page");
@@ -206,7 +208,8 @@ public class CustomFunctionPage extends WizardPage {
 	@Override
 	public IWizardPage getNextPage() {
 		int num = Integer.valueOf(numOfParas.getText());
-		CustomFunctionParameterPage page =  new CustomFunctionParameterPage(num);
+		CustomFunctionParameterPage page =  
+				new CustomFunctionParameterPage(num);
 		page.setWizard(getWizard());
 		((CustomFunctionWizard)getWizard()).setParaPage(page);	
 		return page;

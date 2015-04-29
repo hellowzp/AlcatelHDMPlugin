@@ -46,7 +46,7 @@ import org.eclipse.wst.jsdt.core.JsGlobalScopeContainerInitializer;
 
 public class CustomFunctionWizard extends Wizard implements INewWizard {
 	private CustomFunctionPage firstPage;	
-	private CustomFunctionParameterPage paramPage;
+	private CustomFunctionParameterPage secondPage;
 	
 	static final ImageDescriptor LOGO_DESCRIPTOR = HDMPluginActivator.getImageDescriptor("icons/logo_big.png");
 
@@ -57,18 +57,13 @@ public class CustomFunctionWizard extends Wizard implements INewWizard {
 	
 	public void addPages() {
 		firstPage = new CustomFunctionPage();
-//		paraPage = new ParaConfigurePage(); //dummy page
 		addPage(firstPage);
-//		addPage(paraPage);
-//		for(IWizardPage page : getPages()) {
-//			System.out.println(page.getName() + page.isPageComplete());
-//		}	
 	}
 	
 	public boolean canFinish() {
 		if (getContainer().getCurrentPage() == firstPage)
 			return firstPage.getNumOfParameers() == 0;
-		return paramPage.isPageComplete();
+		return secondPage.isPageComplete();
 	}
 
 	/**
@@ -120,7 +115,7 @@ public class CustomFunctionWizard extends Wizard implements INewWizard {
 			e.printStackTrace();
 		}
 		
-		final Configuration config = new Configuration(firstPage, paramPage);
+		final Configuration config = new Configuration(firstPage, secondPage);
 		
 		IRunnableWithProgress op = new IRunnableWithProgress() {			
 			public void run(IProgressMonitor monitor) throws InvocationTargetException {								
@@ -428,7 +423,7 @@ public class CustomFunctionWizard extends Wizard implements INewWizard {
 		}else{
 			sb.append("\t<inputParameters>\n?\t</inputParameters>\n</function>");
 			for(int i=0; i<config.paraNames.size(); i++) {
-				String paraType = paramPage.getParaType(config.paraTypes.get(i));
+				String paraType = secondPage.getParaType(config.paraTypes.get(i));
 				String para = "\t\t<" + paraType + " name=\"" 
 							+ config.paraNames.get(i) + "\" type=\"" + config.paraTypes.get(i) +"\">"
 							+ "\n\t\t\t<description>" + config.paraDescs.get(i) + "</description>"
@@ -480,7 +475,7 @@ public class CustomFunctionWizard extends Wizard implements INewWizard {
 	}
 	
 	public void setParaPage(CustomFunctionParameterPage page) {
-		this.paramPage = page;
+		this.secondPage = page;
 	}
 
 	/**
