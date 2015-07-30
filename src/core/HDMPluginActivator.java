@@ -4,7 +4,6 @@ import java.io.File;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -27,15 +26,6 @@ public class HDMPluginActivator extends AbstractUIPlugin {
 	
 	public static String getPluginId() {
 		return plugin.getBundle().getSymbolicName();
-	}
-	
-	/**
-	 * This method should not be used,
-	 * it just shows how to get the bundle in a static way
-	 * @return bundle of the plugin
-	 */
-	public static Bundle getPluginBundle() {
-		return Platform.getBundle(plugin.getBundle().getSymbolicName());
 	}
 	
 	/**

@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'>
+
+	<xs:element name="function">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="inputParameters">
+					<xs:complexType>
+						<xs:sequence minOccurs="0" maxOccurs="unbounded">
+							<xs:element name="simpleParameter" type="simpleParameterType"
+								minOccurs="0" />
+							<xs:element name="complexParameter" type="complexParameterType"
+								minOccurs="0" />
+						</xs:sequence>
+						<!-- xsd:choice minOccurs="0" maxOccurs="unbounded"> <xs:element name="simpleParameter" 
+							type="simpleParameterType"/> <xs:element name="complexParameter" type="complexParameterType"/> 
+							</xsd:choice -->
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="script-mappings" minOccurs="0"
+					maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence minOccurs="0" maxOccurs="unbounded">
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="scriptMappings" minOccurs="0"
+					maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="scriptMapping" minOccurs="1"
+								maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="deviceType" minOccurs="0"
+											maxOccurs="1">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="OUI" minOccurs="1" maxOccurs="1">
+														<xs:simpleType>
+															<xs:restriction base="xs:string">
+																<xs:minLength value="1" />
+																<xs:pattern value=".*\S.*" />
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:element>
+													<xs:element name="productClass" minOccurs="1"
+														maxOccurs="1">
+														<xs:simpleType>
+															<xs:restriction base="xs:string">
+																<xs:minLength value="1" />
+																<xs:pattern value=".*\S.*" />
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="softwareVersion" minOccurs="0"
+											maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:minLength value="1" />
+													<xs:pattern value=".*\S.*" />
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="dataModelType" minOccurs="0"
+											maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+									</xs:sequence>
+									<xs:attribute name="jsContentMappingName" type="xs:string"
+										use="required" />
+									<xs:attribute name="order" type="xs:integer"
+										use="required" />
+									<xs:attribute name="default" type="xs:boolean"
+										use="optional" />
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="name" type="xs:string" use="required" />
+			<xs:attribute name="nameKey" type="xs:string" />
+			<xs:attribute name="code" type="xs:string" use="required" />
+			<xs:attribute name="preactivation" type="xs:boolean" />
+			<xs:attribute name="standardfunction" type="xs:boolean" />
+			<xs:attribute name="functionVersion" type="xs:string" />
+			<xs:attribute name="deviceTypeBound" type="xs:boolean" />
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="parameterType">
+		<xs:sequence>
+			<xs:element name="description" type="xs:string" />
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required" />
+		<xs:attribute name="required" type="xs:boolean" />
+	</xs:complexType>
+
+	<xs:complexType name="simpleParameterType">
+		<xs:complexContent>
+			<xs:extension base="parameterType">
+				<xs:sequence>
+					<xs:element name="default" minOccurs="0">
+						<xs:complexType>
+							<xs:attribute name="value" type="xs:string" use="required" />
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="choices" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="choice" maxOccurs="unbounded">
+									<xs:complexType>
+										<xs:attribute name="value" type="xs:string" use="required" />
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="prop" minOccurs="0" maxOccurs="unbounded">
+						<xs:complexType>
+							<xs:attribute name="name" type="xs:string" use="required" />
+							<xs:attribute name="value" type="xs:string" use="required" />
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+				<xs:attribute name="type" use="required">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="integer" />
+							<xs:enumeration value="string" />
+							<xs:enumeration value="text" />
+							<xs:enumeration value="date" />
+							<xs:enumeration value="boolean" />
+							<xs:enumeration value="unsignedInt" />
+							<xs:enumeration value="long" />
+							<xs:enumeration value="unsignedLong" />
+							<xs:enumeration value="hexBinary" />
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+				<xs:attribute name="nameKey" type="xs:string" />
+				<xs:attribute name="unit" type="xs:string" />
+				<xs:attribute name="password" type="xs:boolean" />
+				<xs:attribute name="default" type="xs:string" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="complexParameterType">
+		<xs:complexContent>
+			<xs:extension base="parameterType">
+				<xs:sequence>
+					<xs:element name="prop" minOccurs="0" maxOccurs="unbounded">
+						<xs:complexType>
+							<xs:attribute name="name" type="xs:string" use="required" />
+							<xs:attribute name="value" type="xs:string" use="required" />
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+				<xs:attribute name="type" use="required">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="AddObjectDTO" />
+							<xs:enumeration value="DeleteObjectDTO" />
+							<xs:enumeration value="DownloadDTO" />
+							<xs:enumeration value="FirmwareUpdateDTO" />
+							<xs:enumeration value="GetOptionsDTO" />
+							<xs:enumeration value="GetParameterAttributesDTO" />
+							<xs:enumeration value="GetParameterNamesDTO" />
+							<xs:enumeration value="GetParameterValuesDTO" />
+							<xs:enumeration value="SnmpGetParameterValuesDTO" />
+							<xs:enumeration value="RestoreDTO" />
+							<xs:enumeration value="SetParameterAttributesDTO" />
+							<xs:enumeration value="SetParameterValuesDTO" />
+							<xs:enumeration value="SnmpSetParameterValuesDTO" />
+							<xs:enumeration value="SetVouchersDTO" />
+							<xs:enumeration value="UploadDTO" />
+							<xs:enumeration value="ChangeDeploymentStateDTO" />
+							<xs:enumeration value="ScheduleDownloadDTO" />
+							<xs:enumeration value="CancelTransferDTO" />
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

@@ -32,9 +32,6 @@ public class CustomFunctionParameterPage extends WizardPage {
 	private List<Boolean> initStates;
 	private int numOfParas;
 	
-	private static final String[] simpleTypes = PluginPropertyBundle.PARAMETER_SIMPLE_TYPES;
-	private static final String[] complexTypes = PluginPropertyBundle.PARAMETER_COMPLEX_TYPES;
-	
 	public CustomFunctionParameterPage(int numOfParas) {
 		super("ParaConfigurePage");
 	    setTitle("Function parameters");
@@ -139,7 +136,7 @@ public class CustomFunctionParameterPage extends WizardPage {
 			final Combo combo = new Combo(group, SWT.READ_ONLY);
 			combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 			combo.setCursor(new Cursor(getShell().getDisplay(), SWT.CURSOR_HAND));
-			combo.setItems(simpleTypes);
+			combo.setItems(PluginPropertyBundle.SIMPLE_PARAMETERS);
 			combo.select(0);
 			paraTypes.add(combo);
 			
@@ -147,7 +144,7 @@ public class CustomFunctionParameterPage extends WizardPage {
 			btnSimpleType.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					combo.setItems(simpleTypes);
+					combo.setItems(PluginPropertyBundle.SIMPLE_PARAMETERS);
 					combo.select(0);
 				}
 			});
@@ -158,7 +155,7 @@ public class CustomFunctionParameterPage extends WizardPage {
 			btnComplexType.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					combo.setItems(complexTypes);
+					combo.setItems(PluginPropertyBundle.COMPLEX_PARAMETERS);
 					combo.select(0);
 				}
 			});
@@ -234,7 +231,7 @@ public class CustomFunctionParameterPage extends WizardPage {
 	}
 	
 	public String getParaType(String para) {
-		for(String s : simpleTypes) {
+		for(String s : PluginPropertyBundle.SIMPLE_PARAMETERS) {
 			if(s.equals(para))
 				return "simpleParameter";
 		}
