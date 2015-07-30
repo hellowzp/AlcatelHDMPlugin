@@ -1,11 +1,7 @@
-package ui;
+package library;
 
-import java.io.File;
-import java.io.IOException;
-import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.jsdt.core.IAccessRule;
 import org.eclipse.wst.jsdt.core.IIncludePathAttribute;
 import org.eclipse.wst.jsdt.core.IIncludePathEntry;
@@ -13,18 +9,15 @@ import org.eclipse.wst.jsdt.core.IJavaScriptProject;
 import org.eclipse.wst.jsdt.core.JavaScriptCore;
 import org.eclipse.wst.jsdt.core.JsGlobalScopeContainerInitializer;
 import org.eclipse.wst.jsdt.core.compiler.libraries.LibraryLocation;
-import org.eclipse.wst.jsdt.core.compiler.libraries.SystemLibraryLocation;
-import org.osgi.framework.Bundle;
+
+import core.PluginPropertyBundle;
 
 public class HDMSharedLibraryInitializer extends JsGlobalScopeContainerInitializer {
 	
-	private static final String LIBRARY_ID = "al.hdm.sharedlibrary";
-	private static final String[] LIBRARY_FILE_NAMES = { "common.js", "sharedScript.js", "sharedPreactivationScript.js" };
-
 	private final LibraryLocation libLocation = new HDMLibraryLocation();
 
 	public IPath getPath() {
-		return new Path(LIBRARY_ID);
+		return new Path(PluginPropertyBundle.LIBRARY_ID);
 	}
 
 	public LibraryLocation getLibraryLocation() {
@@ -57,37 +50,4 @@ public class HDMSharedLibraryInitializer extends JsGlobalScopeContainerInitializ
 		return entries;
 	}
 
-	final class HDMLibraryLocation extends SystemLibraryLocation {
-		private HDMLibraryLocation() {
-		}
-
-		public char[][] getLibraryFileNames() {
-			char[][] libs = new char[LIBRARY_FILE_NAMES.length][];
-			for (int i = 0; i < LIBRARY_FILE_NAMES.length; i++) {
-				libs[i] = LIBRARY_FILE_NAMES[i].toCharArray();
-			}
-			return libs;
-		}
-
-		public IPath getLibraryPathInPlugin() {
-			return new Path("libraries");
-		}
-
-		public String getLibraryPath(char[] paramArrayOfChar) {
-			Bundle bundle = Platform.getBundle("AlcatelHDMPlugin");
-			File bundleFile = null;
-			try {
-				bundleFile = FileLocator.getBundleFile(bundle);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-			File libFile = new File(bundleFile, "libraries/" + new String(paramArrayOfChar));
-			return libFile.getAbsolutePath();
-		}
-
-		protected String getPluginId() {
-			return "AlcatelHDMPlugin";
-		}
-	}
 }

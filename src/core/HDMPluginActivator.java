@@ -1,10 +1,9 @@
-package ui;
+package core;
 
 import java.io.File;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -12,17 +11,21 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
 public class HDMPluginActivator extends AbstractUIPlugin {
-	public static final String PLUGIN_ID = "AlcatelHDMPlugin";
-	public static final String IMAGE_REGISTRY_ID = "Alcatel-Lucent image registry";
+
+	/**
+	 * This shouldn't be called before the plugin is initialized by the platform
+	 * through invoking its start() method
+	 */
+//	public static final String PLUGIN_ID = getPluginId();
 	
 	private static HDMPluginActivator plugin;
 	
 	public static HDMPluginActivator getDefault() {
 		return plugin;
-	}
+	}	
 	
-	public String getPluginId() {
-		return getBundle().getSymbolicName();
+	public static String getPluginId() {
+		return plugin.getBundle().getSymbolicName();
 	}
 	
 	/**
@@ -32,6 +35,7 @@ public class HDMPluginActivator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;	
+		System.out.println("Plugin started: " + getBundle().getSymbolicName());
 	}
 	
 	@Override
@@ -46,14 +50,17 @@ public class HDMPluginActivator extends AbstractUIPlugin {
 	 * @return the image descriptor
 	 */
 	public static ImageDescriptor getImageDescriptor(String path) {
-		return imageDescriptorFromPlugin(PLUGIN_ID, path);
+		return AbstractUIPlugin.imageDescriptorFromPlugin(
+				plugin.getBundle().getSymbolicName(), path);
 	}
 	
+	//https://eclipse.org/articles/Article-Using%20Images%20In%20Eclipse/Using%20Images%20In%20Eclipse.html
 	@Override
 	protected void initializeImageRegistry(ImageRegistry registry) {
-        Bundle bundle = Platform.getBundle(PLUGIN_ID);
+        Bundle bundle = getBundle();
         ImageDescriptor img = ImageDescriptor.createFromURL( 
-        		FileLocator.find(bundle, new Path("icons"+File.separator+"logo.png"), null));
+        		FileLocator.find( bundle, 
+        				new Path("icons"+File.separator+"logo.png"), null));
         registry.put("AL_LOGO", img);
     }
 		

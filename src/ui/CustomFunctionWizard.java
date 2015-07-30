@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import library.HDMSharedLibraryInitializer;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -44,11 +46,13 @@ import org.eclipse.wst.jsdt.core.IJavaScriptProject;
 import org.eclipse.wst.jsdt.core.JavaScriptCore;
 import org.eclipse.wst.jsdt.core.JsGlobalScopeContainerInitializer;
 
+import core.HDMPluginActivator;
+
 public class CustomFunctionWizard extends Wizard implements INewWizard {
 	private CustomFunctionPage firstPage;	
 	private CustomFunctionParameterPage secondPage;
 	
-	static final ImageDescriptor LOGO_DESCRIPTOR = HDMPluginActivator.getImageDescriptor("icons/logo_big.png");
+	public static final ImageDescriptor LOGO_DESCRIPTOR = HDMPluginActivator.getImageDescriptor("icons/logo_big.png");
 
 	public CustomFunctionWizard() {
 		super();
@@ -283,7 +287,7 @@ public class CustomFunctionWizard extends Wizard implements INewWizard {
 		
 		monitor.setTaskName("Opening the js file in JavaScript perspective...");
 		IWorkspaceRoot ws = ResourcesPlugin.getWorkspace().getRoot();
-		System.out.println(ws.getLocation() + " " + ws.getLocationURI());
+//		System.out.println(ws.getLocation() + " " + ws.getLocationURI());
 		IPath path = ws.getLocation().append(File.separator + ".metadata" + File.separator + ".hdm");
 //		System.out.println(path.toString());
 //		IFolder preFolder = ws.getFolder(new Path(".hdm"));
@@ -342,7 +346,9 @@ public class CustomFunctionWizard extends Wizard implements INewWizard {
 							getShell(), "Comfirm", getDefaultPageImage(), 
 							"This project is associated with the JavaScript perspective.\n"
 						  + "Do you want to open this perspective now?", 
-							MessageDialog.QUESTION, new String[] {"OK", "Cancel"}, 0, "Remember this decision", false);
+							MessageDialog.QUESTION, 
+							new String[] {"OK", "Cancel"}, 0, 
+							"Remember this decision", false);
 					msgDialog.open();
 
 //					boolean cm = MessageDialogWithToggle.openConfirm(

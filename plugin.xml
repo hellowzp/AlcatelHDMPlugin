@@ -5,23 +5,24 @@
    <extension
          point="org.eclipse.ui.newWizards">
       <category
-      		name="Alcatel-Lucent Bell HDM Development"
-      		id="al.hdm.jsWizard">
+      		name="%wizard.category.name"
+      		id="%wizard.category.id">
   	  </category>
       <wizard
-            name="HDM Custom Function Project"
+            name="%wizard.name"
             icon="icons/logo.png"
-            category="al.hdm.jsWizard"
+            category="%wizard.category.id"
             class="ui.CustomFunctionWizard"
-            id="al.hdm.ui.CustomFunctionWizard">
+            id="%wizard.id">
       </wizard>
    </extension> 
       
    <extension
             point="org.eclipse.wst.jsdt.core.JsGlobalScopeContainerInitializer">
         <JsGlobalScopeContainerInitializer
-        	id="al.hdm.sharedlibrary"
-        	class="ui.HDMSharedLibraryInitializer"/>
+        	id="%library.id"
+        	class="library.HDMSharedLibraryInitializer">
+		</JsGlobalScopeContainerInitializer>        	
    </extension>
    
    <!--
@@ -43,7 +44,7 @@
          point="org.eclipse.ui.commands">
       <category
             id="al.hdm.commands.category"
-            name="Zip">
+            name="Zip command category">
       </category>
       <command
             categoryId="al.hdm.commands.category"
@@ -55,7 +56,7 @@
    <extension
          point="org.eclipse.ui.handlers">
       <handler
-            class="handlers.ZipHandler"
+            class="handler.ZipHandler"
             commandId="al.hdm.commands.zipCommand">
       </handler>
    </extension>
@@ -93,7 +94,7 @@
                   commandId="al.hdm.commands.zipCommand"
                   icon="icons/logo.png"
                   id="al.hdm.toolbars.zipCommandToolbar"
-                  tooltip="Zip JavaScript and xml custom function files">
+                  tooltip="Zip the JavaScript and xml custom function files">
             </command>
          </toolbar>
       </menuContribution>

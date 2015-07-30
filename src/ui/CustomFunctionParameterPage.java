@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.custom.ScrolledComposite;
 
+import core.PluginPropertyBundle;
 import util.Validator;
 
 public class CustomFunctionParameterPage extends WizardPage {
@@ -31,12 +32,6 @@ public class CustomFunctionParameterPage extends WizardPage {
 	private List<Boolean> initStates;
 	private int numOfParas;
 	
-	private static final String[] simpleTypes = new String[]{"string","integer","text","date","boolean","unsignedInt","long","unsignedLong","hexBinary"};
-	private static final String[] complexTypes = new String[]{"AddObjectDTO","DeleteObjectDTO","DownloadDTO","FirmwareUpdateDTO","GetOptionsDTO",
-														"GetParameterAttributesDTO","GetParameterNamesDTO","GetParameterValuesDTO","SnmpGetParameterValuesDTO",
-														"RestoreDTO","SetParameterAttributesDTO","SetParameterAttributesDTO","SnmpSetParameterValuesDTO",
-														"SetVouchersDTO","UploadDTO","ChangeDeploymentStateDTO","ScheduleDownloadDTO","CancelTransferDTO"};
-
 	public CustomFunctionParameterPage(int numOfParas) {
 		super("ParaConfigurePage");
 	    setTitle("Function parameters");
@@ -60,7 +55,10 @@ public class CustomFunctionParameterPage extends WizardPage {
 	public void createControl(Composite parent) {
 		ScrolledComposite scrolledComposite = new ScrolledComposite(parent, SWT.BORDER | SWT.V_SCROLL);
 		Composite container = new Composite(scrolledComposite, SWT.NONE);
-		container.setBounds(15, 15, 520, 400);
+		container.setBounds( PluginPropertyBundle.PAGE_BOUND_X, 
+							 PluginPropertyBundle.PAGE_BOUND_Y,
+							 PluginPropertyBundle.PAGE_WIDTH,
+							 PluginPropertyBundle.PAGE_HEIGHT);
 		container.setLayout(new GridLayout(1, false));
 //		container.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
 		setControl(scrolledComposite);
@@ -70,10 +68,12 @@ public class CustomFunctionParameterPage extends WizardPage {
 		scrolledComposite.setContent(container);
 //		scrolledComposite.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
 //		
-		if(numOfParas>5) {
-			scrolledComposite.setMinSize(520,numOfParas*100);
+		if(numOfParas>PluginPropertyBundle.PARAMETER_THRESHOLD) {
+			scrolledComposite.setMinSize( PluginPropertyBundle.PAGE_WIDTH,
+							numOfParas * PluginPropertyBundle.PAGE_ROW_HEIGHT);
 		}else{
-			scrolledComposite.setSize(520,400);
+			scrolledComposite.setSize( PluginPropertyBundle.PAGE_WIDTH,
+					 				   PluginPropertyBundle.PAGE_HEIGHT);
 		}
 		
 //		scrolledComposite.addControlListener(new ControlAdapter() {
@@ -87,12 +87,12 @@ public class CustomFunctionParameterPage extends WizardPage {
 		for (int i = 0; i<numOfParas; i++) {
 			Group group = new Group(container, SWT.NONE);
 		    GridData groupGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		    groupGridData.widthHint = 500;
-		    groupGridData.heightHint = 75;
+		    groupGridData.widthHint = PluginPropertyBundle.PAGE_WIDTH_HINT;
+		    groupGridData.heightHint = PluginPropertyBundle.PAGE_HEIGHT_HINT;
 		    group.setLayoutData(groupGridData);
 		    group.setText("Parameter  " + (i+1));
 		    GridLayout gd = new GridLayout(4, false);
-		    gd.horizontalSpacing = 10;
+		    gd.horizontalSpacing = PluginPropertyBundle.PAGE_HORIZONTAL_SPACE;
 		    group.setLayout(gd);
 		    
 			Label lblName = new Label(group, SWT.NONE);
@@ -136,7 +136,7 @@ public class CustomFunctionParameterPage extends WizardPage {
 			final Combo combo = new Combo(group, SWT.READ_ONLY);
 			combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 			combo.setCursor(new Cursor(getShell().getDisplay(), SWT.CURSOR_HAND));
-			combo.setItems(simpleTypes);
+			combo.setItems(PluginPropertyBundle.SIMPLE_PARAMETERS);
 			combo.select(0);
 			paraTypes.add(combo);
 			
@@ -144,7 +144,7 @@ public class CustomFunctionParameterPage extends WizardPage {
 			btnSimpleType.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					combo.setItems(simpleTypes);
+					combo.setItems(PluginPropertyBundle.SIMPLE_PARAMETERS);
 					combo.select(0);
 				}
 			});
@@ -155,7 +155,7 @@ public class CustomFunctionParameterPage extends WizardPage {
 			btnComplexType.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					combo.setItems(complexTypes);
+					combo.setItems(PluginPropertyBundle.COMPLEX_PARAMETERS);
 					combo.select(0);
 				}
 			});
@@ -231,7 +231,7 @@ public class CustomFunctionParameterPage extends WizardPage {
 	}
 	
 	public String getParaType(String para) {
-		for(String s : simpleTypes) {
+		for(String s : PluginPropertyBundle.SIMPLE_PARAMETERS) {
 			if(s.equals(para))
 				return "simpleParameter";
 		}
